@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>vkvg</RootNamespace>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+     <!-- Package Info -->
+        
+    <PackageId>vkvg.net</PackageId>
+    <PackageVersion>$(AssemblyVersion)</PackageVersion>
+    <Description>c# bindings for vkvg</Description>
+    <PackageTags>Vulkan Vector Graphics 3D GPU vkvg Khronos</PackageTags>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright 2018 (c) Jean-Philippe Bruyère. All rights reserved.</Copyright>
+    <Authors>Jean-Philippe Bruyère</Authors>
+    <ProjectUrl>https://github.com/jpbruyere/vkvg.net</ProjectUrl>
+    <RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>
