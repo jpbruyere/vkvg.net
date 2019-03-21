@@ -53,8 +53,6 @@ namespace tests {
             Glfw3.SetMouseButtonPosCallback (hWin, HandleMouseButtonDelegate);
             Glfw3.SetCursorPosCallback (hWin, HandleCursorPosDelegate);
             Glfw3.SetWindowSizeCallback (hWin, HandleWindowSizeDelegate);
-            //this.windowSizeCallback = (x, y, z) => this.RecreateSwapChain ();
-            //Glfw3.SetWindowSizeCallback (this.window, this.windowSizeCallback);
 
             instance = new Instance ();
 
