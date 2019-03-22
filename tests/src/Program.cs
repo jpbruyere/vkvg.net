@@ -23,13 +23,6 @@ namespace tests {
                 ctx.LineTo (200, a);
                 ctx.SetSource (0, 0, 1);
                 ctx.Stroke ();*/
-
-                ctx.MoveTo (200, 200);
-                ctx.FontSize = 20;
-                ctx.FontFace = "droid";
-                //ctx.ShowText (this.frameTimer.ToString());
-                ctx.ShowText ("This is a test string");
-
                 float xc = 128.0f;
                 float yc = 128.0f;
                 float radius = 100.0f;
@@ -51,6 +44,13 @@ namespace tests {
                 ctx.LineTo (xc, yc);
                 ctx.Arc (xc, yc, radius, angle2, angle2);
                 ctx.Stroke ();
+
+                ctx.SetSource (1, 1, 1);
+                ctx.MoveTo (200, 200);
+                ctx.FontSize = 20;
+                ctx.FontFace = "droid";
+                //ctx.ShowText (this.frameTimer.ToString());
+                ctx.ShowText ("This is a test string");
             }
         }
 
