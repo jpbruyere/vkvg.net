@@ -133,9 +133,9 @@ namespace tests {
             }
         }
 
-        public bool GetPresentIsSupported (int qFamilyIndex, VkSurfaceKHR surf) {
+        public bool GetPresentIsSupported (uint qFamilyIndex, VkSurfaceKHR surf) {
             VkBool32 isSupported = false;
-            VulkanNative.vkGetPhysicalDeviceSurfaceSupportKHR (phy, (uint)qFamilyIndex, surf, out isSupported);
+            VulkanNative.vkGetPhysicalDeviceSurfaceSupportKHR (phy, qFamilyIndex, surf, out isSupported);
             return isSupported;
         }
 

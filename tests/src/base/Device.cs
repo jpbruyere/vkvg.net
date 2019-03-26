@@ -24,6 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Vulkan;
 using static Vulkan.VulkanNative;
 
@@ -31,65 +34,70 @@ namespace tests {
     public class Device : IDisposable {
         public readonly PhysicalDevice phy;
         VkDevice dev;
-        VkSurfaceKHR hSurf;
         public VkDevice VkDev => dev;
 
+        internal List<Queue> queues = new List<Queue> ();
 
-        public Device (PhysicalDevice _phy, VkSurfaceKHR _hSurf) {
+        public Device (PhysicalDevice _phy) {
             phy = _phy;
-            hSurf = _hSurf;
-
-            ConfigureQueues ();
         }
 
-        protected virtual void ConfigureEnabledFeatures (ref VkPhysicalDeviceFeatures enabledFeatures) {
-            enabledFeatures.sampleRateShading = true;
-        }
+        unsafe public void Activate (VkPhysicalDeviceFeatures enabledFeatures, string[] extensions) {
 
-        unsafe protected void ConfigureQueues () {
-            uint selectQFamIdx = uint.MaxValue;
+            NativeList<VkDeviceQueueCreateInfo> qInfos = new NativeList<VkDeviceQueueCreateInfo> ();
+            NativeList<float> priorities = null;
 
-            for (int i = 0; i < phy.QueueFamilies.Length; i++) {
-                if (phy.QueueFamilies[i].queueFlags.HasFlag (VkQueueFlags.Graphics) &&
-                    phy.GetPresentIsSupported (i, hSurf)) {
-                    selectQFamIdx = (uint)i;
-                    break;
+            foreach (IGrouping<uint, Queue> qfams in queues.GroupBy (q => q.qFamIndex)) {
+                int qTot = qfams.Count ();
+                uint qIndex = 0;
+                priorities = new NativeList<float> ();
+                bool qCountReached = false;//true when queue count of that family is reached
+
+                foreach (Queue q in qfams) {
+                    q.index = qIndex++;
+                    if (qIndex == phy.QueueFamilies[qfams.Key].queueCount) {
+                        qIndex = 0;
+                        qCountReached = true;
+                    }
+                    if (qCountReached)
+                        continue;
+                    priorities.Add (q.priority);
                 }
-            }
 
-            float defaultQueuePriority = 0.0f;
-
-            VkDeviceQueueCreateInfo[] qInfos = {
-                new VkDeviceQueueCreateInfo {
+                qInfos.Add (new VkDeviceQueueCreateInfo {
                     sType = VkStructureType.DeviceQueueCreateInfo,
-                    queueCount = 1,
-                    queueFamilyIndex = selectQFamIdx,
-                    pQueuePriorities = &defaultQueuePriority
-                }
-            };
-
-            VkPhysicalDeviceFeatures enabledFeatures = default (VkPhysicalDeviceFeatures);
-            ConfigureEnabledFeatures (ref enabledFeatures);
-
-            FixedUtf8String VK_KHR_SWAPCHAIN_EXTENSION_NAME = "VK_KHR_swapchain";
-            NativeList<IntPtr> deviceExtensions = new NativeList<IntPtr> ();
-            deviceExtensions.Add (VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-
-            VkDeviceCreateInfo deviceCreateInfo = VkDeviceCreateInfo.New ();
-            fixed (VkDeviceQueueCreateInfo* pQInfos = qInfos) {
-                deviceCreateInfo.queueCreateInfoCount = (uint)qInfos.Length;
-                deviceCreateInfo.pQueueCreateInfos = pQInfos;
-                deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
-
-                if (deviceExtensions.Count > 0) {
-                    deviceCreateInfo.enabledExtensionCount = deviceExtensions.Count;
-                    deviceCreateInfo.ppEnabledExtensionNames = (byte**)deviceExtensions.Data.ToPointer ();
-                }
-
-                Utils.CheckResult (vkCreateDevice (phy.Handle, &deviceCreateInfo, null, out dev));
+                    queueCount = qCountReached ? phy.QueueFamilies[qfams.Key].queueCount : qIndex,
+                    queueFamilyIndex = qfams.Key,
+                    pQueuePriorities = (float*)priorities.Data.ToPointer ()
+                });
             }
 
+
+            NativeList<IntPtr> deviceExtensions = new NativeList<IntPtr> ();
+            for (int i = 0; i < extensions.Length; i++) {
+                deviceExtensions.Add (new FixedUtf8String(extensions[i]));
+            }
+
+            VkPhysicalDeviceFeatures features = enabledFeatures;
+            VkDeviceCreateInfo deviceCreateInfo = VkDeviceCreateInfo.New ();
+
+            deviceCreateInfo.queueCreateInfoCount = qInfos.Count;
+            deviceCreateInfo.pQueueCreateInfos = (VkDeviceQueueCreateInfo*)qInfos.Data.ToPointer();
+            deviceCreateInfo.pEnabledFeatures = &features;
+
+            if (deviceExtensions.Count > 0) {
+                deviceCreateInfo.enabledExtensionCount = deviceExtensions.Count;
+                deviceCreateInfo.ppEnabledExtensionNames = (byte**)deviceExtensions.Data.ToPointer ();
+            }
+
+            Utils.CheckResult (vkCreateDevice (phy.Handle, &deviceCreateInfo, null, out dev));
+
+            qInfos.Dispose ();
+            priorities.Dispose ();
             deviceExtensions.Dispose ();
+
+            foreach (Queue q in queues)
+                q.updateHandle ();
         }
 
         unsafe public VkSemaphore CreateSemaphore () {

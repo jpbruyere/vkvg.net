@@ -6,8 +6,8 @@ namespace Vulkan
 {
     public unsafe class FixedUtf8String : IDisposable
     {
-        private GCHandle _handle;
-        private uint _numBytes;
+        GCHandle _handle;
+        uint _numBytes;
 
         public byte* StringPtr => (byte*)_handle.AddrOfPinnedObject().ToPointer();
 

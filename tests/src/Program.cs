@@ -8,8 +8,16 @@ namespace tests {
         vkvg.Surface vkvgSurf;
 
         Program () : base ("test") {
-            vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, 0);
+            vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex,presentQueue.index);
             vkvgSurf = new vkvg.Surface (vkvgDev, 1024, 768);
+        }
+
+        protected override void configureEnabledFeatures (ref VkPhysicalDeviceFeatures features) {
+            features.sampleRateShading = true;
+        }
+
+        protected override void createQueues () {
+            presentQueue = new PresentQueue (dev, VkQueueFlags.Graphics, hSurf);
         }
 
         int a = 0;

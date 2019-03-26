@@ -30,7 +30,7 @@ using static Vulkan.VulkanNative;
 namespace tests {
     public class SwapChain {
         Device dev;
-        VkSurfaceKHR surf;
+        PresentQueue presentQueue;
         VkSwapchainKHR swapchain;
         CommandPool cmdPool;
         VkSemaphore presentComplete;
@@ -46,13 +46,13 @@ namespace tests {
 
         public uint ImageCount => (uint)images?.Length;
 
-        public SwapChain (Device device, uint presentQFamIdx, VkSurfaceKHR surface, uint width = 800, uint height = 600, VkFormat format = VkFormat.B8g8r8a8Unorm, VkPresentModeKHR presentMode = VkPresentModeKHR.FifoKHR) {
-            dev = device;
-            surf = surface;
+        public SwapChain (PresentQueue _presentableQueue, uint width = 800, uint height = 600, VkFormat format = VkFormat.B8g8r8a8Unorm, VkPresentModeKHR presentMode = VkPresentModeKHR.FifoKHR) {
+            presentQueue = _presentableQueue;
+            dev = presentQueue.dev;
 
             createInfos = VkSwapchainCreateInfoKHR.New ();
 
-            VkSurfaceFormatKHR[] formats = dev.phy.GetSurfaceFormats (surf);
+            VkSurfaceFormatKHR[] formats = dev.phy.GetSurfaceFormats (presentQueue.Surface);
             for (int i = 0; i < formats.Length; i++) {
                 if (formats[i].format == format) {
                     createInfos.imageFormat = format;
@@ -63,7 +63,7 @@ namespace tests {
             if (createInfos.imageFormat == VkFormat.Undefined) 
                 throw new Exception ("Invalid format for swapchain: " + format);
 
-            VkPresentModeKHR[] presentModes = dev.phy.GetSurfacePresentModes (surf);
+            VkPresentModeKHR[] presentModes = dev.phy.GetSurfacePresentModes (presentQueue.Surface);
             for (int i = 0; i < presentModes.Length; i++) {
                 if (presentModes[i] == presentMode) {
                     createInfos.presentMode = presentMode;
@@ -73,7 +73,7 @@ namespace tests {
             if (createInfos.presentMode != presentMode)
                 throw new Exception ("Invalid presentMode for swapchain: " + presentMode);
 
-            createInfos.surface = surface;
+            createInfos.surface = presentQueue.Surface;
             createInfos.imageExtent = new VkExtent2D (width, height);
             createInfos.imageArrayLayers = 1;
             createInfos.imageUsage = VkImageUsageFlags.ColorAttachment | VkImageUsageFlags.TransferDst;
@@ -84,7 +84,7 @@ namespace tests {
 
             presentComplete = dev.CreateSemaphore ();
 
-            cmdPool = dev.CreateCommandPool (presentQFamIdx);
+            cmdPool = dev.CreateCommandPool (presentQueue.qFamIndex);
 
             Create ();
         }
@@ -92,7 +92,7 @@ namespace tests {
         unsafe public void Create () {
             dev.WaitIdle ();
 
-            VkSurfaceCapabilitiesKHR capabilities = dev.phy.GetSurfaceCapabilities (surf);
+            VkSurfaceCapabilitiesKHR capabilities = dev.phy.GetSurfaceCapabilities (presentQueue.Surface);
 
             createInfos.minImageCount = capabilities.minImageCount;
             createInfos.preTransform = capabilities.currentTransform;
@@ -138,10 +138,7 @@ namespace tests {
             }
             Utils.CheckResult (res);
 
-            VkQueue queue;
-            vkGetDeviceQueue(dev.VkDev, cmdPool.QFamIndex, 0, out queue);
-
-            cmds[currentImageIndex].Submit (queue, presentComplete, drawComplete[currentImageIndex]);
+            cmds[currentImageIndex].Submit (presentQueue.handle, presentComplete, drawComplete[currentImageIndex]);
                         
             VkPresentInfoKHR present = VkPresentInfoKHR.New ();
             VkSwapchainKHR sc = swapchain;
@@ -154,7 +151,7 @@ namespace tests {
             present.pWaitSemaphores = &wait;
             present.pImageIndices = &idx;
 
-            Utils.CheckResult (vkQueuePresentKHR (queue, &present));
+            Utils.CheckResult (vkQueuePresentKHR (presentQueue.handle, &present));
             return true;
         }
 

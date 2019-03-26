@@ -24,20 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Runtime.InteropServices;
-using Vulkan;
-using static Vulkan.VulkanNative;
 using System.Linq;
 using Glfw;
+using Vulkan;
+using static Vulkan.VulkanNative;
 
 namespace tests {
     public class VkWindow {
         IntPtr hWin;
-        VkSurfaceKHR hSurf;
 
+        protected VkSurfaceKHR hSurf;
         protected Instance instance;
         protected PhysicalDevice phy;
         protected Device dev;
+        protected Queue presentQueue;
         protected SwapChain swapChain;
 
         public VkWindow (string name, int width = 1024, int height=768)
@@ -54,14 +54,38 @@ namespace tests {
             Glfw3.SetCursorPosCallback (hWin, HandleCursorPosDelegate);
             Glfw3.SetWindowSizeCallback (hWin, HandleWindowSizeDelegate);
 
+            initVulkan ();
+        }
+
+        void initVulkan () {
             instance = new Instance ();
 
             hSurf = instance.CreateSurface (hWin);
 
             phy = instance.GetAvailablePhysicalDevice ().Where (p => p.HasSwapChainSupport).FirstOrDefault ();
 
-            InitVulkan ();
+            VkPhysicalDeviceFeatures enabledFeatures = default(VkPhysicalDeviceFeatures);
+            configureEnabledFeatures (ref enabledFeatures);
+
+            //First create the c# device class
+            dev = new Device (phy);
+            //create queue class
+            createQueues ();
+            //activate the device to have effective queues created accordingly to what's available
+            dev.Activate (enabledFeatures, new string[] { "VK_KHR_swapchain" });
+
+            swapChain = new SwapChain (presentQueue as PresentQueue);
         }
+
+        protected virtual void configureEnabledFeatures (ref VkPhysicalDeviceFeatures features) {
+        }
+
+        protected virtual void createQueues () {
+            presentQueue = new PresentQueue (dev, VkQueueFlags.Graphics, hSurf);
+        }
+
+
+
 
         protected virtual void HandleWindowSizeDelegate (IntPtr window, int width, int height) {
             BuildCommandBuffers ();
@@ -94,33 +118,6 @@ namespace tests {
         public virtual void Update () {
         }
 
-        unsafe void InitVulkan () {
-            uint selectQFamIdx = uint.MaxValue;
-
-            for (int i = 0; i < phy.QueueFamilies.Length; i++) {
-                if (phy.QueueFamilies[i].queueFlags.HasFlag (VkQueueFlags.Graphics) &&
-                    phy.GetPresentIsSupported (i, hSurf)) {
-                    selectQFamIdx = (uint)i;
-                    break;
-                }
-            }
-
-            float defaultQueuePriority = 0.0f;
-
-            VkDeviceQueueCreateInfo[] qInfos = {
-                new VkDeviceQueueCreateInfo {
-                    sType = VkStructureType.DeviceQueueCreateInfo,
-                    queueCount = 1,
-                    queueFamilyIndex = selectQFamIdx,
-                    pQueuePriorities = &defaultQueuePriority
-                }
-            };
-
-
-            dev = new Device (phy, hSurf);
-
-            swapChain = new SwapChain (dev, selectQFamIdx, hSurf);
-        }
 
         protected virtual void BuildCommandBuffers () {
         }
