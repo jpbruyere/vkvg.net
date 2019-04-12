@@ -32,14 +32,27 @@ namespace vkvg
 
 		IntPtr handle = IntPtr.Zero;
 
-		public Device (IntPtr instance, IntPtr phy, IntPtr dev, uint qFamIdx, uint qIndex = 0)
+		#region CTORS & DTOR
+		public Device (IntPtr instance, IntPtr phy, IntPtr dev, uint qFamIdx, SampleCount samples = SampleCount.Sample_1, uint qIndex = 0)
 		{
-			handle = NativeMethods.vkvg_device_create (instance, phy, dev, qFamIdx, qIndex);
+			handle = NativeMethods.vkvg_device_create_multisample (instance, phy, dev, qFamIdx, qIndex, samples, false);
 		}
 		~Device ()
 		{
 			Dispose (false);
 		}
+		#endregion
+
+		public void GetDpy (out int hdpy, out int vdpy) {
+			NativeMethods.vkvg_device_get_dpy (handle, out hdpy, out vdpy);
+		}
+		public void SetDpy (int hdpy, int vdpy) {
+			NativeMethods.vkvg_device_set_dpy (handle, hdpy, vdpy);
+		}
+		public void AddReference () {
+			NativeMethods.vkvg_device_reference (handle);
+		}
+		public uint References () => NativeMethods.vkvg_device_get_reference_count (handle);
 
 		public IntPtr Handle { get { return handle; }}
 

@@ -25,19 +25,16 @@
 // THE SOFTWARE.
 using System;
 using System.Collections;
-using Vulkan;
+using VK;
 
-namespace tests {
-    public class QueueFamily {
-        public VkQueueFlags Flags;
-        public NativeList<float> Priorities;
-    }
+using static VK.Vk;
+
+namespace VKE {
+
     public class PresentQueue : Queue {
-
         public readonly VkSurfaceKHR Surface;
 
-        public PresentQueue (Device _dev, VkQueueFlags requestedFlags, VkSurfaceKHR _surface, float _priority = 0.0f) 
-        : base(_dev, requestedFlags, _priority) {
+        public PresentQueue (Device _dev, VkQueueFlags requestedFlags, VkSurfaceKHR _surface, float _priority = 0.0f) {        
             dev = _dev;
             priority = _priority;
             Surface = _surface;
@@ -45,6 +42,7 @@ namespace tests {
             qFamIndex = searchQFamily (requestedFlags);
             dev.queues.Add (this);
         }
+        
         uint searchQFamily (VkQueueFlags requestedFlags) {
             //search for dedicated Q
             for (uint i = 0; i < dev.phy.QueueFamilies.Length; i++) {
@@ -59,18 +57,43 @@ namespace tests {
 
             throw new Exception (string.Format ("No Queue with flags {0} found", requestedFlags));
         }
+
+        public void Present (VkPresentInfoKHR present) {
+            Utils.CheckResult (vkQueuePresentKHR (handle, ref present));
+        }
+        public void Present (SwapChain swapChain, VkSemaphore wait) {
+            unsafe {
+                VkPresentInfoKHR present = VkPresentInfoKHR.New();
+
+                uint idx = swapChain.currentImageIndex;
+                VkSwapchainKHR sc = swapChain.handle;
+                present.swapchainCount = 1;
+                present.pSwapchains = sc.Pin();
+                present.waitSemaphoreCount = 1;
+                present.pWaitSemaphores = wait.Pin();
+                present.pImageIndices = idx.Pin();
+
+                Utils.CheckResult (vkQueuePresentKHR (handle, ref present));
+
+				sc.Unpin ();
+				wait.Unpin ();
+				idx.Unpin ();
+            }
+        }
     }
 
     public class Queue {
 
         internal VkQueue handle;
         internal Device dev;
+		public Device Dev => dev;
 
         VkQueueFlags flags => dev.phy.QueueFamilies[qFamIndex].queueFlags;
         public uint qFamIndex;
         public uint index;//index in queue family
         public float priority;
 
+        protected Queue () { }
         public Queue (Device _dev, VkQueueFlags requestedFlags, float _priority = 0.0f) {
             dev = _dev;
             priority = _priority;
@@ -79,7 +102,11 @@ namespace tests {
             dev.queues.Add (this);
         }
 
-        public void Submit () { 
+        public void Submit (CommandBuffer cmd, VkSemaphore wait = default(VkSemaphore), VkSemaphore signal = default (VkSemaphore), VkFence fence = default (VkFence)) {
+            cmd.Submit (handle, wait, signal, fence);
+        }
+        public void WaitIdle () {
+            Utils.CheckResult (vkQueueWaitIdle (handle));
         }
 
         uint searchQFamily (VkQueueFlags requestedFlags) {
@@ -98,7 +125,7 @@ namespace tests {
         }
 
         internal void updateHandle () {
-            VulkanNative.vkGetDeviceQueue (dev.VkDev, qFamIndex, index, out handle);
+            vkGetDeviceQueue (dev.VkDev, qFamIndex, index, out handle);
         }
     }
 }

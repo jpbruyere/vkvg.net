@@ -26,14 +26,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Vulkan;
-using static Vulkan.VulkanNative;
-using static Vulkan.Utils;
+using VK;
+using static VK.Vk;
 
-namespace tests {
+namespace VKE {
     public class Instance : IDisposable {
         VkInstance inst;
-
 
         static class Strings {
             public static FixedUtf8String Name = "VKENGINE";
@@ -44,6 +42,8 @@ namespace tests {
             public static FixedUtf8String VK_KHR_SWAPCHAIN_EXTENSION_NAME = "VK_KHR_swapchain";
             public static FixedUtf8String VK_EXT_DEBUG_REPORT_EXTENSION_NAME = "VK_EXT_debug_report";
             public static FixedUtf8String StandardValidationLayeName = "VK_LAYER_LUNARG_standard_validation";
+            public static FixedUtf8String VkTraceLayeName = "VK_LAYER_LUNARG_vktrace";
+            public static FixedUtf8String RenderdocCaptureLayerName = "VK_LAYER_RENDERDOC_Capture";
             public static FixedUtf8String main = "main";
         }
 
@@ -54,7 +54,7 @@ namespace tests {
         public VkSurfaceKHR CreateSurface (IntPtr hWindow) {
             ulong surf;
             Utils.CheckResult ((VkResult)Glfw.Glfw3.CreateWindowSurface (inst.Handle, hWindow, IntPtr.Zero, out surf), "Create Surface Failed.");
-            return (VkSurfaceKHR)surf;
+            return surf;
         }
 
         public Instance () {
@@ -64,17 +64,11 @@ namespace tests {
         public IntPtr Handle {
             get { return inst.Handle; }
         }
-        unsafe void init (bool enableValidation = true) {
+        unsafe void init () {        
+            NativeList<IntPtr> instanceExtensions = new NativeList<IntPtr> ();
+			NativeList<IntPtr> enabledLayerNames = new NativeList<IntPtr> ();
 
-            VkApplicationInfo appInfo = new VkApplicationInfo () {
-                sType = VkStructureType.ApplicationInfo,
-                apiVersion = new Vulkan.Version (1, 0, 0),
-                pApplicationName = Strings.Name,
-                pEngineName = Strings.Name,
-            };
-
-            NativeList<IntPtr> instanceExtensions = new NativeList<IntPtr> (2);
-            instanceExtensions.Add (Strings.VK_KHR_SURFACE_EXTENSION_NAME);
+			instanceExtensions.Add (Strings.VK_KHR_SURFACE_EXTENSION_NAME);
             if (RuntimeInformation.IsOSPlatform (OSPlatform.Windows)) {
                 instanceExtensions.Add (Strings.VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
             } else if (RuntimeInformation.IsOSPlatform (OSPlatform.Linux)) {
@@ -83,31 +77,49 @@ namespace tests {
                 throw new PlatformNotSupportedException ();
             }
 
-            VkInstanceCreateInfo instanceCreateInfo = VkInstanceCreateInfo.New ();
-            instanceCreateInfo.pApplicationInfo = &appInfo;
+#if DEBUG
+			instanceExtensions.Add (Strings.VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 
-            if (instanceExtensions.Count > 0) {
-                if (enableValidation) {
-                    instanceExtensions.Add (Strings.VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-                }
-                instanceCreateInfo.enabledExtensionCount = instanceExtensions.Count;
-                instanceCreateInfo.ppEnabledExtensionNames = (byte**)instanceExtensions.Data;
+			enabledLayerNames.Add (Strings.StandardValidationLayeName);
+#if RENDERDOC
+			enabledLayerNames.Add (Strings.RenderdocCaptureLayerName);
+#endif
+#endif
+			VkApplicationInfo appInfo = new VkApplicationInfo () {
+				sType = VkStructureType.ApplicationInfo,
+				apiVersion = new Vulkan.Version (1, 0, 0),
+				pApplicationName = Strings.Name,
+				pEngineName = Strings.Name,
+			};
+
+			VkInstanceCreateInfo instanceCreateInfo = VkInstanceCreateInfo.New();
+	         instanceCreateInfo.pApplicationInfo = appInfo.Pin();
+
+			if (instanceExtensions.Count > 0) {
+			    instanceCreateInfo.enabledExtensionCount = instanceExtensions.Count;
+			    instanceCreateInfo.ppEnabledExtensionNames = instanceExtensions.Data;
+			}
+			if (enabledLayerNames.Count > 0) {
+				instanceCreateInfo.enabledLayerCount = enabledLayerNames.Count;
+				instanceCreateInfo.ppEnabledLayerNames = enabledLayerNames.Data;
+			}
+
+			VkResult result = vkCreateInstance (ref instanceCreateInfo, IntPtr.Zero, out inst);
+			if (result != VkResult.Success) 
+			    throw new InvalidOperationException ("Could not create Vulkan instance. Error: " + result);
+
+			Vk.LoadInstanceFunctionPointers (inst);
+
+			appInfo.Unpin ();
+			instanceExtensions.Dispose ();
+			enabledLayerNames.Dispose ();            
+        }
+
+
+        public void GetDelegate<T> (string name, out T del) {
+            using (FixedUtf8String n = new FixedUtf8String (name)) {
+                del = Marshal.GetDelegateForFunctionPointer<T> (vkGetInstanceProcAddr (Handle, (IntPtr)n));
             }
-
-
-            if (enableValidation) {
-                NativeList<IntPtr> enabledLayerNames = new NativeList<IntPtr> (1);
-                enabledLayerNames.Add (Strings.StandardValidationLayeName);
-                instanceCreateInfo.enabledLayerCount = enabledLayerNames.Count;
-                instanceCreateInfo.ppEnabledLayerNames = (byte**)enabledLayerNames.Data;
-            }
-
-            VkInstance instanceTmp;
-            VkResult result = vkCreateInstance (&instanceCreateInfo, null, &instanceTmp);
-            if (result != VkResult.Success) {
-                throw new InvalidOperationException ("Could not create Vulkan instance. Error: " + result);
-            }
-            inst = instanceTmp;
         }
 
         #region IDisposable Support
@@ -118,7 +130,7 @@ namespace tests {
                 if (disposing) {
                     // TODO: supprimer l'état managé (objets managés).
                 }
-
+                
                 vkDestroyInstance (inst, IntPtr.Zero);
 
                 disposedValue = true;

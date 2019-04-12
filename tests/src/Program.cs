@@ -1,27 +1,20 @@
 ﻿using System;
-using Vulkan;
-using static Vulkan.VulkanNative;
+using VKE;
+using static VK.Vk;
 
-namespace tests {
+namespace VK {
     class Program : VkWindow {
         vkvg.Device vkvgDev;
         vkvg.Surface vkvgSurf;
 
-        Program () : base ("test") {
-            vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex,presentQueue.index);
-            vkvgSurf = new vkvg.Surface (vkvgDev, 1024, 768);
+        Program () : base ("test", 1024,768) {
+            UpdateFreq = 2;
+            vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex);
         }
-
-        protected override void configureEnabledFeatures (ref VkPhysicalDeviceFeatures features) {
-            features.sampleRateShading = true;
-        }
-
-        protected override void createQueues () {
-            presentQueue = new PresentQueue (dev, VkQueueFlags.Graphics, hSurf);
-        }
-
+            
         int a = 0;
         void vkvgDraw () {
+            a ++;
             using (vkvg.Context ctx = new vkvg.Context (vkvgSurf)) {
                 ctx.SetSource (0.4, 0.4, 0.4);
                 ctx.Paint ();
@@ -34,8 +27,8 @@ namespace tests {
                 float xc = 128.0f;
                 float yc = 128.0f;
                 float radius = 100.0f;
-                float angle1 = 45.0f * (MathF.PI / 180.0f);  /* angles are specified */
-                float angle2 = 180.0f * (MathF.PI / 180.0f);  /* in radians           */
+                float angle1 = 45.0f * ((float)Math.PI / 180.0f);  /* angles are specified */
+                float angle2 = 180.0f * ((float)Math.PI / 180.0f);  /* in radians           */
 
                 ctx.SetSource (0, 0, 0);
                 ctx.LineWidth = 10;
@@ -62,26 +55,27 @@ namespace tests {
             }
         }
 
-        protected override void HandleWindowSizeDelegate (IntPtr window, int width, int height) {
-            dev.WaitIdle ();
-            vkvgSurf.Dispose ();
-            Console.WriteLine ("surf resized");
-            vkvgSurf = new vkvg.Surface (vkvgDev, width, height);
-
-            base.HandleWindowSizeDelegate (window, width, height);
+        public override void Update () {         
+            vkvgDraw ();
         }
-        unsafe protected override void BuildCommandBuffers () {
-            Console.WriteLine ("rebuild cmd buff");
-            VkImage srcImg = new Vulkan.VkImage ((ulong)vkvgSurf.VkImage.ToInt64 ());
+
+        protected override void OnResize () {
+
+            if (vkvgSurf != null)
+                vkvgSurf.Dispose ();
+            vkvgSurf = new vkvg.Surface (vkvgDev, (int)swapChain.Width, (int)swapChain.Height);
+
+            VkImage srcImg = new VkImage ((ulong)vkvgSurf.VkImage.ToInt64 ());
 
             for (int i = 0; i < swapChain.ImageCount; ++i) {
 
-                swapChain.cmds[i].Start ();
+                cmds[i] = cmdPool.AllocateCommandBuffer ();
+                cmds[i].Start ();
 
-                Utils.setImageLayout (swapChain.cmds[i].Handle, swapChain.images[i], VkImageAspectFlags.Color,
+                Utils.setImageLayout (cmds[i].Handle, swapChain.images[i].Handle, VkImageAspectFlags.Color,
                     VkImageLayout.Undefined, VkImageLayout.TransferDstOptimal,
                     VkPipelineStageFlags.BottomOfPipe, VkPipelineStageFlags.Transfer);
-                Utils.setImageLayout (swapChain.cmds[i].Handle, srcImg, VkImageAspectFlags.Color,
+                Utils.setImageLayout (cmds[i].Handle, srcImg, VkImageAspectFlags.Color,
                     VkImageLayout.ColorAttachmentOptimal, VkImageLayout.TransferSrcOptimal,
                     VkPipelineStageFlags.ColorAttachmentOutput, VkPipelineStageFlags.Transfer);
 
@@ -98,31 +92,33 @@ namespace tests {
                     dstOffset = default (VkOffset3D),
                     extent = new VkExtent3D { width = (uint)vkvgSurf.Width, height = (uint)vkvgSurf.Height }
                 };
-                vkCmdCopyImage (swapChain.cmds[i].Handle, srcImg, VkImageLayout.TransferSrcOptimal,
-                    swapChain.images[i], VkImageLayout.TransferDstOptimal, 1, &cregion);
+                vkCmdCopyImage (cmds[i].Handle, srcImg, VkImageLayout.TransferSrcOptimal,
+                    swapChain.images[i].Handle, VkImageLayout.TransferDstOptimal, 1, ref cregion);
 
-                Utils.setImageLayout (swapChain.cmds[i].Handle, swapChain.images[i], VkImageAspectFlags.Color,
+                Utils.setImageLayout (cmds[i].Handle, swapChain.images[i].Handle, VkImageAspectFlags.Color,
                     VkImageLayout.TransferDstOptimal, VkImageLayout.PresentSrcKHR,
                     VkPipelineStageFlags.Transfer, VkPipelineStageFlags.BottomOfPipe);
-                Utils.setImageLayout (swapChain.cmds[i].Handle, srcImg, VkImageAspectFlags.Color,
+                Utils.setImageLayout (cmds[i].Handle, srcImg, VkImageAspectFlags.Color,
                     VkImageLayout.TransferSrcOptimal, VkImageLayout.ColorAttachmentOptimal,
                     VkPipelineStageFlags.Transfer, VkPipelineStageFlags.ColorAttachmentOutput);
 
-                swapChain.cmds[i].End ();
+                cmds[i].End ();
             }
+            dev.WaitIdle ();
         }
-        public override void Update () {
-            vkvgDraw ();
-        }
-        protected override void Destroy () {
+
+        protected override void Dispose (bool disposing) {
+
             vkvgSurf.Dispose ();
             vkvgDev.Dispose ();
 
-            base.Destroy ();
+            base.Dispose (disposing);
         }
+
         static void Main (string[] args) {
-            Program vke = new Program ();
-            vke.Run ();
+            using (Program vke = new Program ()) {
+                vke.Run ();
+            }			
         }
     }
 }

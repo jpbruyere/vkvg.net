@@ -44,6 +44,11 @@ namespace vkvg
 
 		public IntPtr Handle { get { return handle; }}
 
+		public void AddReference () {
+			NativeMethods.vkvg_reference (handle);
+		}
+		public uint References () => NativeMethods.vkvg_get_reference_count (handle);
+
 		public double LineWidth {			
 			set { NativeMethods.vkvg_set_line_width (handle, (float)value); }
 		}
@@ -81,6 +86,9 @@ namespace vkvg
 		}
 		public void Flush () {
 			NativeMethods.vkvg_flush (handle);
+		}
+		public void Clear () {
+			NativeMethods.vkvg_clear (handle);
 		}
 
 		public void Paint () {
@@ -144,6 +152,12 @@ namespace vkvg
 		public void ResetClip () {
 			NativeMethods.vkvg_reset_clip (handle);
 		}
+		public void NewPath () {
+			NativeMethods.vkvg_new_path (handle);
+		}
+		public void NewSubPath () {
+			NativeMethods.vkvg_new_sub_path (handle);
+		}
 		public void ClosePath () {
 			NativeMethods.vkvg_close_path (handle);
 		}
@@ -198,7 +212,9 @@ namespace vkvg
 			NativeMethods.vkvg_rel_curve_to (handle, (float)x1, (float)y1, (float)x2, (float)y2, (float)x3, (float)y3);
 		}
 
-
+		public void SetSource (Pattern pat) {
+			NativeMethods.vkvg_set_source (handle, pat.Handle);
+		}
 		public void SetSource (float r, float g, float b, float a = 1f) {
 			NativeMethods.vkvg_set_source_rgba (handle, r, g, b, a);
 		}

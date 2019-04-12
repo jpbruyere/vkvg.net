@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FCC16959-4B37-40EB-963B-8D06E617C952}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>tests.net</RootNamespace>
+    <AssemblyName>tests.net</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="VK">
+      <HintPath>..\packages\Vulkan.0.1.1-alpha\lib\netstandard2.0\VK.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0-preview3.19128.7\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\tests\src\Program.cs">
+      <Link>Program.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\Activable.cs">
+      <Link>vke\Activable.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\Buffer.cs">
+      <Link>vke\Buffer.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\CommandBuffer.cs">
+      <Link>vke\CommandBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\CommandPool.cs">
+      <Link>vke\CommandPool.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\DescriptorPool.cs">
+      <Link>vke\DescriptorPool.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\DescriptorSet.cs">
+      <Link>vke\DescriptorSet.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\DescriptorSetLayout.cs">
+      <Link>vke\DescriptorSetLayout.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\DescriptorSetWrites.cs">
+      <Link>vke\DescriptorSetWrites.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\Device.cs">
+      <Link>vke\Device.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\ExtensionMethods.cs">
+      <Link>vke\ExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\FixedUtf8String.cs">
+      <Link>vke\FixedUtf8String.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\FrameBuffer.cs">
+      <Link>vke\FrameBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\Image.cs">
+      <Link>vke\Image.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\Instance.cs">
+      <Link>vke\Instance.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\NativeList.cs">
+      <Link>vke\NativeList.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\PhysicalDevice.cs">
+      <Link>vke\PhysicalDevice.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\Pipeline.cs">
+      <Link>vke\Pipeline.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\PipelineConfig.cs">
+      <Link>vke\PipelineConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\PipelineLayout.cs">
+      <Link>vke\PipelineLayout.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\QueryPool.cs">
+      <Link>vke\QueryPool.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\Queue.cs">
+      <Link>vke\Queue.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\RenderPass.cs">
+      <Link>vke\RenderPass.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\Resource.cs">
+      <Link>vke\Resource.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\ShaderInfo.cs">
+      <Link>vke\ShaderInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\SubPass.cs">
+      <Link>vke\SubPass.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\SwapChain.cs">
+      <Link>vke\SwapChain.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\Utils.cs">
+      <Link>vke\Utils.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\Version.cs">
+      <Link>vke\Version.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\VkFormatSize.cs">
+      <Link>vke\VkFormatSize.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\VkWindow.cs">
+      <Link>vke\VkWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\stb.cs">
+      <Link>vke\stb.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\CodePoint.cs">
+      <Link>vke\glfw\CodePoint.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\Delegates.cs">
+      <Link>vke\glfw\Delegates.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\ErrorCode.cs">
+      <Link>vke\glfw\ErrorCode.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\Glfw3.cs">
+      <Link>vke\glfw\Glfw3.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\InputAction.cs">
+      <Link>vke\glfw\InputAction.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\Key.cs">
+      <Link>vke\glfw\Key.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\Modifier.cs">
+      <Link>vke\glfw\Modifier.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\MonitorEvent.cs">
+      <Link>vke\glfw\MonitorEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\MonitorHandle.cs">
+      <Link>vke\glfw\MonitorHandle.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\MouseButton.cs">
+      <Link>vke\glfw\MouseButton.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\NativeString.cs">
+      <Link>vke\glfw\NativeString.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\VideoMode.cs">
+      <Link>vke\glfw\VideoMode.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\VideoModePointer.cs">
+      <Link>vke\glfw\VideoModePointer.cs</Link>
+    </Compile>
+    <Compile Include="..\tests\src\vke\glfw\WindowAttribute.cs">
+      <Link>vke\glfw\WindowAttribute.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vkvg\vkvg.net.csproj">
+      <Project>{583A2D15-A01F-4089-87A6-6C16409FC150}</Project>
+      <Name>vkvg.net</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

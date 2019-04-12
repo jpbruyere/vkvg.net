@@ -2,19 +2,28 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+<!--    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>-->
     <RootNamespace>vkvg</RootNamespace>
-    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <AssemblyVersion>0.2.0</AssemblyVersion>
+    <Description>c# bindings for vkvg</Description>        
+    <Copyright>Copyright 2018-2019 (c) Jean-Philippe Bruyère. All rights reserved.</Copyright>
+    <Authors>Jean-Philippe Bruyère</Authors>
      <!-- Package Info -->
-        
+    <PackOnBuild>true</PackOnBuild>
     <PackageId>vkvg.net</PackageId>
     <PackageVersion>$(AssemblyVersion)</PackageVersion>
-    <Description>c# bindings for vkvg</Description>
     <PackageTags>Vulkan Vector Graphics 3D GPU vkvg Khronos</PackageTags>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright 2018 (c) Jean-Philippe Bruyère. All rights reserved.</Copyright>
-    <Authors>Jean-Philippe Bruyère</Authors>
-    <ProjectUrl>https://github.com/jpbruyere/vkvg.net</ProjectUrl>
+    <PackageProjectUrl>https://github.com/jpbruyere/vkvg.net</PackageProjectUrl>        
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance><!--    <ProjectUrl>https://github.com/jpbruyere/vkvg.net</ProjectUrl>
     <RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
-  </PropertyGroup>
+-->  <!--    <ProjectUrl>https://github.com/jpbruyere/vkvg.net</ProjectUrl>
+    <RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
+-->  
+<!--    <PackageIconUrl>https://jpbruyere.github.io/Crow/images/crow.png</PackageIconUrl>-->
+<!--    <ProjectUrl>https://github.com/jpbruyere/vkvg.net</ProjectUrl>
+    <RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
+-->  </PropertyGroup>
 
 </Project>

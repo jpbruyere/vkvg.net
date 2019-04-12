@@ -24,14 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Vulkan;
-using static Vulkan.VulkanNative;
-using static Vulkan.Utils;
+using VK;
+using static VK.Vk;
+using static VK.Utils;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace tests {
+namespace VKE {
     public class PhysicalDeviceCollection : IEnumerable<PhysicalDevice> {
         VkInstance inst;
         PhysicalDevice[] phys;
@@ -57,20 +57,21 @@ namespace tests {
 
         unsafe void init () {
             uint gpuCount = 0;
-            CheckResult (vkEnumeratePhysicalDevices (inst, &gpuCount, null));
+            CheckResult (vkEnumeratePhysicalDevices (inst, out gpuCount, IntPtr.Zero));
             if (gpuCount <= 0)
                 throw new Exception ("No GPU found");
-            IntPtr[] gpus = new IntPtr [gpuCount];
-
-            fixed (IntPtr* physicalDevices = gpus) {
-                CheckResult (vkEnumeratePhysicalDevices (inst, &gpuCount, (VkPhysicalDevice*)physicalDevices),
+            NativeList<VkPhysicalDevice> gpus = new NativeList<VkPhysicalDevice> (gpuCount, gpuCount);
+            //fixed (IntPtr* physicalDevices = gpus) {
+            CheckResult (vkEnumeratePhysicalDevices (inst, out gpuCount, gpus.Data),
                     "Could not enumerate physical devices.");
-            }
+            //}
             phys = new PhysicalDevice[gpuCount];
+            Console.WriteLine ("gpu count " + gpuCount);
 
-            for (int i = 0; i < gpuCount; i++) {
-                phys[i] = new PhysicalDevice (gpus[i]);
-            }
+            for (int i = 0; i < gpuCount; i++)
+                phys[i] = new PhysicalDevice (gpus[i].Handle);
+
+            gpus.Dispose ();
         }
     }
     public class PhysicalDevice {
@@ -80,6 +81,8 @@ namespace tests {
         public VkPhysicalDeviceFeatures deviceFeatures { get; private set; }
         public VkPhysicalDeviceMemoryProperties memoryProperties { get; private set; }
         public VkQueueFamilyProperties[] QueueFamilies { get; private set; }
+
+		public VkPhysicalDeviceLimits Limits => deviceProperties.limits;
 
         public bool HasSwapChainSupport { get; private set; }
         public IntPtr Handle => phy;
@@ -91,51 +94,55 @@ namespace tests {
 
         unsafe void init () {
             VkPhysicalDeviceProperties pdp;
-            vkGetPhysicalDeviceProperties (phy, &pdp);
+            vkGetPhysicalDeviceProperties (phy, out pdp);
             deviceProperties = pdp;
 
             VkPhysicalDeviceFeatures df;
-            vkGetPhysicalDeviceFeatures (phy, &df);
+            vkGetPhysicalDeviceFeatures (phy, out df);
             deviceFeatures = df;
 
             // Gather physical Device memory properties
-            VkPhysicalDeviceMemoryProperties dmp;
-            vkGetPhysicalDeviceMemoryProperties (phy, &dmp);
-            memoryProperties = dmp;
+            IntPtr tmp = Marshal.AllocHGlobal (Marshal.SizeOf<VkPhysicalDeviceMemoryProperties>());
+            vkGetPhysicalDeviceMemoryProperties (phy, tmp);
+            memoryProperties = Marshal.PtrToStructure<VkPhysicalDeviceMemoryProperties> (tmp);
 
             uint queueFamilyCount = 0;
-            vkGetPhysicalDeviceQueueFamilyProperties (phy, ref queueFamilyCount, null);
+            vkGetPhysicalDeviceQueueFamilyProperties (phy, out queueFamilyCount, IntPtr.Zero);
             QueueFamilies = new VkQueueFamilyProperties[queueFamilyCount];
 
             if (queueFamilyCount <= 0)
                 throw new Exception ("No queues found for physical device");
 
-            fixed (VkQueueFamilyProperties* ptr = QueueFamilies) {
-                vkGetPhysicalDeviceQueueFamilyProperties (phy, &queueFamilyCount, ptr);
-            }
+			vkGetPhysicalDeviceQueueFamilyProperties (phy, out queueFamilyCount, QueueFamilies.Pin ());
+			QueueFamilies.Unpin ();
 
             uint propCount = 0;
 
-            vkEnumerateDeviceExtensionProperties (phy, (byte*)null, ref propCount, IntPtr.Zero);
+            vkEnumerateDeviceExtensionProperties (phy, IntPtr.Zero, out propCount, IntPtr.Zero);
 
             VkExtensionProperties[] extProps = new VkExtensionProperties[propCount];
-            fixed (VkExtensionProperties* ptr = extProps) {
-                vkEnumerateDeviceExtensionProperties (phy, (byte*)null, ref propCount, ptr);
-            }
 
-            foreach (VkExtensionProperties p in extProps) {
-                IntPtr n = (IntPtr)p.extensionName;
-                switch (Marshal.PtrToStringUTF8 (n)) {
-                    case "VK_KHR_swapchain":
-                        HasSwapChainSupport = true;
-                        break;
+			vkEnumerateDeviceExtensionProperties (phy, IntPtr.Zero, out propCount, extProps.Pin ());
+			extProps.Unpin ();
+
+            for (int i = 0; i < extProps.Length; i++)
+            {
+                fixed (VkExtensionProperties* ep = extProps) {
+                    IntPtr n = (IntPtr)ep[i].extensionName;
+                    switch (Marshal.PtrToStringAnsi(n))
+                    {
+                        case "VK_KHR_swapchain":
+                            HasSwapChainSupport = true;
+                            break;
+                    }
                 }
-            }
+			}		
         }
+
 
         public bool GetPresentIsSupported (uint qFamilyIndex, VkSurfaceKHR surf) {
             VkBool32 isSupported = false;
-            VulkanNative.vkGetPhysicalDeviceSurfaceSupportKHR (phy, qFamilyIndex, surf, out isSupported);
+            vkGetPhysicalDeviceSurfaceSupportKHR (phy, qFamilyIndex, surf, out isSupported);
             return isSupported;
         }
 
@@ -147,21 +154,28 @@ namespace tests {
 
         unsafe public VkSurfaceFormatKHR[] GetSurfaceFormats (VkSurfaceKHR surf) {
             uint count = 0;
-            vkGetPhysicalDeviceSurfaceFormatsKHR (phy, surf, ref count, null);
+            vkGetPhysicalDeviceSurfaceFormatsKHR (phy, surf, out count, IntPtr.Zero);
             VkSurfaceFormatKHR[] formats = new VkSurfaceFormatKHR[count];
-            fixed (VkSurfaceFormatKHR* ptr = formats) {
-                vkGetPhysicalDeviceSurfaceFormatsKHR (phy, surf, ref count, ptr);
-            }
+            
+            vkGetPhysicalDeviceSurfaceFormatsKHR (phy, surf, out count, formats.Pin());
+			formats.Unpin ();
+            
             return formats;
         }
         unsafe public VkPresentModeKHR[] GetSurfacePresentModes (VkSurfaceKHR surf) {
             uint count = 0;
-            vkGetPhysicalDeviceSurfacePresentModesKHR (phy, surf, ref count, null);
+            vkGetPhysicalDeviceSurfacePresentModesKHR (phy, surf, out count, IntPtr.Zero);
             VkPresentModeKHR[] modes = new VkPresentModeKHR[count];
-            fixed (VkPresentModeKHR* ptr = modes) {
-                vkGetPhysicalDeviceSurfacePresentModesKHR (phy, surf, ref count, ptr);
-            }
+            
+            vkGetPhysicalDeviceSurfacePresentModesKHR (phy, surf, out count, modes.Pin());
+			modes.Unpin ();
+            
             return modes;
+        }
+        public VkFormatProperties GetFormatProperties (VkFormat format) {
+            VkFormatProperties properties;
+            vkGetPhysicalDeviceFormatProperties (phy, format, out properties);
+            return properties;
         }
     }
 }

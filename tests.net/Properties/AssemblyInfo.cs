@@ -1,5 +1,5 @@
 ﻿//
-// DeviceObject.cs
+// AssemblyInfo.cs
 //
 // Author:
 //       Jean-Philippe Bruyère <jp_bruyere@hotmail.com>
@@ -23,15 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using Vulkan;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
-namespace tests {
-    public abstract class DeviceObject {
-        protected VkDevice dev;
-        internal DeviceObject (VkDevice device) {
-            dev = device;
-        }
-        public abstract void Destroy ();
-    }
-}
+// Information about this assembly is defined by the following attributes. 
+// Change them to the values specific to your project.
+
+[assembly: AssemblyTitle ("tests.net")]
+[assembly: AssemblyDescription ("")]
+[assembly: AssemblyConfiguration ("")]
+[assembly: AssemblyCompany ("Grand Tetra Software")]
+[assembly: AssemblyProduct ("")]
+[assembly: AssemblyCopyright ("jp")]
+[assembly: AssemblyTrademark ("")]
+[assembly: AssemblyCulture ("")]
+
+// The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
+// The form "{Major}.{Minor}.*" will automatically update the build and revision,
+// and "{Major}.{Minor}.{Build}.*" will update just the revision.
+
+[assembly: AssemblyVersion ("1.0.*")]
+
+// The following attributes are used to specify the signing key for the assembly, 
+// if desired. See the Mono documentation for more information about signing.
+
+//[assembly: AssemblyDelaySign(false)]
+//[assembly: AssemblyKeyFile("")]

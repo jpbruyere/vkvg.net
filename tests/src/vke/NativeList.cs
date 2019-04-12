@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 #if !VALIDATE
 using System.Diagnostics;
 #endif
-namespace Vulkan
+namespace VK
 {
     public unsafe class NativeList<T> : IEnumerable<T>, IDisposable where T : struct
     {
@@ -33,7 +33,9 @@ namespace Vulkan
         public NativeList(NativeList<T> existingList)
         {
             Allocate(existingList._elementCapacity);
-            Unsafe.CopyBlock(_dataPtr, existingList._dataPtr, existingList._count * s_elementByteSize);
+            long size = existingList._count * s_elementByteSize;
+            System.Buffer.MemoryCopy (_dataPtr, existingList._dataPtr, size, size);
+            //Unsafe.CopyBlock(_dataPtr, existingList._dataPtr, existingList._count * s_elementByteSize);
         }
 
         public IntPtr Data

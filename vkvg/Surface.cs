@@ -61,6 +61,11 @@ namespace vkvg
 		public int Width { get { return NativeMethods.vkvg_surface_get_width (handle); }}
 		public int Height { get { return NativeMethods.vkvg_surface_get_height (handle); }}
 
+		public void AddReference () {
+			NativeMethods.vkvg_surface_reference (handle);
+		}
+		public uint References () => NativeMethods.vkvg_surface_get_reference_count (handle);
+
 //		public Surface CreateSimilar (uint width, uint height) {
 //			return new Surface (handle, width, height);
 //		}
@@ -68,7 +73,17 @@ namespace vkvg
 //			return new Surface (handle, (uint)width, (uint)height);
 //		}
 
-		public void Flush () {}
+		public void Flush () {
+			throw new NotImplementedException ();
+		}
+
+		public void WriteToPng (string path) {
+			NativeMethods.vkvg_surface_write_to_png (handle, path);
+		}
+		public void Clear () {
+			NativeMethods.vkvg_surface_clear (handle);
+		}
+
 		#region IDisposable implementation
 		public void Dispose ()
 		{

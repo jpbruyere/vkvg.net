@@ -24,33 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Vulkan;
-using static Vulkan.VulkanNative;
+using VK;
+using static VK.Vk;
 
-namespace tests {
+namespace VKE {
     public class SwapChain {
         Device dev;
         PresentQueue presentQueue;
-        VkSwapchainKHR swapchain;
-        CommandPool cmdPool;
-        VkSemaphore presentComplete;
+        internal VkSwapchainKHR handle;
 
-        public VkImage[] images;
-        VkImageView[] views;
-        public CommandBuffer[] cmds;
-        VkSemaphore[] drawComplete;
+        public VkSemaphore presentComplete;
 
-        uint currentImageIndex;
+        public Image[] images;
+
+        internal uint currentImageIndex;
 
         VkSwapchainCreateInfoKHR createInfos;
 
         public uint ImageCount => (uint)images?.Length;
+        public uint Width => createInfos.imageExtent.width;
+        public uint Height => createInfos.imageExtent.height;
+        public VkFormat ColorFormat => createInfos.imageFormat;
+        public VkImageUsageFlags ImageUsage => createInfos.imageUsage;
 
         public SwapChain (PresentQueue _presentableQueue, uint width = 800, uint height = 600, VkFormat format = VkFormat.B8g8r8a8Unorm, VkPresentModeKHR presentMode = VkPresentModeKHR.FifoKHR) {
             presentQueue = _presentableQueue;
             dev = presentQueue.dev;
 
-            createInfos = VkSwapchainCreateInfoKHR.New ();
+            createInfos = VkSwapchainCreateInfoKHR.New();
 
             VkSurfaceFormatKHR[] formats = dev.phy.GetSurfaceFormats (presentQueue.Surface);
             for (int i = 0; i < formats.Length; i++) {
@@ -80,11 +81,12 @@ namespace tests {
             createInfos.imageSharingMode = VkSharingMode.Exclusive;
             createInfos.compositeAlpha = VkCompositeAlphaFlagsKHR.OpaqueKHR;
             createInfos.presentMode = presentMode;
-            createInfos.clipped = true;
+            createInfos.clipped = 1;
 
             presentComplete = dev.CreateSemaphore ();
-
-            cmdPool = dev.CreateCommandPool (presentQueue.qFamIndex);
+#if DEBUG && DEBUG_MARKER
+			presentComplete.SetDebugMarkerName (dev, "Semaphore PresentComplete");
+#endif
 
             Create ();
         }
@@ -96,7 +98,7 @@ namespace tests {
 
             createInfos.minImageCount = capabilities.minImageCount;
             createInfos.preTransform = capabilities.currentTransform;
-            createInfos.oldSwapchain = swapchain;
+            createInfos.oldSwapchain = handle;
 
             if (capabilities.currentExtent.width == 0xFFFFFFFF) {
                 if (createInfos.imageExtent.width < capabilities.minImageExtent.width)
@@ -112,61 +114,42 @@ namespace tests {
                 createInfos.imageExtent = capabilities.currentExtent;
 
             VkSwapchainKHR newSwapChain = dev.CreateSwapChain (createInfos);
-            if (swapchain.Handle == 0)
+            if (handle.Handle != 0)
                 _destroy ();
-            swapchain = newSwapChain;
+            handle = newSwapChain;
 
-            images = dev.GetSwapChainImages (swapchain);
-            views = new VkImageView[images.Length];
-            cmds = new CommandBuffer[images.Length];
-            drawComplete = new VkSemaphore[images.Length];
-
-            for (int i = 0; i < views?.Length; i++) {
-                views[i] = dev.CreateImageView (images[i], createInfos.imageFormat);
-                cmds[i] = cmdPool.AllocateCommandBuffer ();
-                drawComplete[i] = dev.CreateSemaphore ();
+            VkImage[] tmp = dev.GetSwapChainImages (handle);
+            images = new Image[tmp.Length];
+            for (int i = 0; i < tmp.Length; i++) {
+                images[i] = new Image (dev, tmp[i], ColorFormat, ImageUsage, Width, Height);
+                images[i].CreateView ();
+#if DEBUG && DEBUG_MARKER
+				images[i].SetName ("SwapChain Img" + i);
+				images[i].Descriptor.imageView.SetDebugMarkerName (dev, "SwapChain Img" + i + " view");
+#endif
             }
-
-            currentImageIndex = 0;
         }
 
-        unsafe public bool Swap () {
-            VkResult res = vkAcquireNextImageKHR (dev.VkDev, swapchain, 999999999, presentComplete, VkFence.Null, ref currentImageIndex);
+        public int GetNextImage () {
+            VkResult res = vkAcquireNextImageKHR (dev.VkDev, handle, UInt64.MaxValue, presentComplete, VkFence.Null, out currentImageIndex);
             if (res == VkResult.ErrorOutOfDateKHR || res == VkResult.SuboptimalKHR) {
                 Create ();
-                return false;
+                return -1;
             }
             Utils.CheckResult (res);
-
-            cmds[currentImageIndex].Submit (presentQueue.handle, presentComplete, drawComplete[currentImageIndex]);
-                        
-            VkPresentInfoKHR present = VkPresentInfoKHR.New ();
-            VkSwapchainKHR sc = swapchain;
-            VkSemaphore wait = drawComplete[currentImageIndex];
-            uint idx = currentImageIndex;
-
-            present.swapchainCount = 1;
-            present.pSwapchains = &sc;
-            present.waitSemaphoreCount = 1;
-            present.pWaitSemaphores = &wait;
-            present.pImageIndices = &idx;
-
-            Utils.CheckResult (vkQueuePresentKHR (presentQueue.handle, &present));
-            return true;
+            return (int)currentImageIndex;
         }
 
         void _destroy () {
-            for (int i = 0; i < views?.Length; i++) {
-                dev.DestroyImageView (views[i]);
-                cmds[i].Destroy ();
-                dev.DestroySemaphore (drawComplete[i]);
-            }
-            dev.DestroySwapChain (swapchain);
+            for (int i = 0; i < ImageCount; i++) 
+                images[i].Dispose ();
+
+            dev.DestroySwapChain (handle);
         }
 
         public void Destroy () {
             _destroy ();
-            cmdPool.Destroy ();
+
             dev.DestroySemaphore (presentComplete);
         }
     }

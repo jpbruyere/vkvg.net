@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vkvg.net", "vkvg\vkvg.net.c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "tests\tests.csproj", "{01841292-197F-40E2-9CED-46AF7CFE72A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests.net", "tests.net\tests.net.csproj", "{FCC16959-4B37-40EB-963B-8D06E617C952}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,5 +21,9 @@ Global
 		{01841292-197F-40E2-9CED-46AF7CFE72A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01841292-197F-40E2-9CED-46AF7CFE72A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01841292-197F-40E2-9CED-46AF7CFE72A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCC16959-4B37-40EB-963B-8D06E617C952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCC16959-4B37-40EB-963B-8D06E617C952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCC16959-4B37-40EB-963B-8D06E617C952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCC16959-4B37-40EB-963B-8D06E617C952}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
