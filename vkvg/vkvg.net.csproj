@@ -1,29 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="..\netfx.props" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-<!--    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>-->
-    <RootNamespace>vkvg</RootNamespace>
-    <AssemblyVersion>0.2.0</AssemblyVersion>
+    <TargetFrameworks>net471;netstandard2.0</TargetFrameworks> 
+    
+    <AssemblyVersion>0.2.2</AssemblyVersion>
     <Description>c# bindings for vkvg</Description>        
     <Copyright>Copyright 2018-2019 (c) Jean-Philippe Bruyère. All rights reserved.</Copyright>
-    <Authors>Jean-Philippe Bruyère</Authors>
      <!-- Package Info -->
-    <PackOnBuild>true</PackOnBuild>
     <PackageId>vkvg.net</PackageId>
-    <PackageVersion>$(AssemblyVersion)</PackageVersion>
     <PackageTags>Vulkan Vector Graphics 3D GPU vkvg Khronos</PackageTags>
+    <PackageVersion>$(AssemblyVersion)-beta</PackageVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/jpbruyere/vkvg.net</PackageProjectUrl>        
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageLicense>https://opensource.org/licenses/MIT</PackageLicense>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance><!--    <ProjectUrl>https://github.com/jpbruyere/vkvg.net</ProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
--->  <!--    <ProjectUrl>https://github.com/jpbruyere/vkvg.net</ProjectUrl>
-    <RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
--->  
-<!--    <PackageIconUrl>https://jpbruyere.github.io/Crow/images/crow.png</PackageIconUrl>-->
-<!--    <ProjectUrl>https://github.com/jpbruyere/vkvg.net</ProjectUrl>
-    <RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
--->  </PropertyGroup>
-
+    <Authors>Jean-Philippe Bruyère</Authors>
+  </PropertyGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <Reference Include="System" />    
+  </ItemGroup>    
 </Project>

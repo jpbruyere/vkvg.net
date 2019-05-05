@@ -1,5 +1,5 @@
 ﻿//
-// FrameBuffer.cs
+// TextRun.cs
 //
 // Author:
 //       Jean-Philippe Bruyère <jp_bruyere@hotmail.com>
@@ -24,45 +24,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using VK;
-using static VK.Vk;
+namespace vkvg {
+	public class TextRun : IDisposable {
 
-namespace VKE {
-	public class ShaderInfo : IDisposable {
-		public VkShaderStageFlags StageFlags;
-		public string SpirvPath;
-		public FixedUtf8String EntryPoint;
+		IntPtr handle = IntPtr.Zero;
 
-		public ShaderInfo (VkShaderStageFlags _stageFlags, string _spirvPath, string _entryPoint = "main") {
-			StageFlags = _stageFlags;
-			SpirvPath = _spirvPath;
-			EntryPoint = new FixedUtf8String (_entryPoint);
+		#region CTORS & DTOR
+		protected TextRun(IntPtr handle) {
+			this.handle = handle;
+		}
+		public TextRun(string text) {
+			handle = NativeMethods.vkvg_text_run_create (handle, Context.TerminateUtf8(text));
 		}
 
-		public VkPipelineShaderStageCreateInfo GetStageCreateInfo (Device dev) {
-			return new VkPipelineShaderStageCreateInfo {
-				sType = VkStructureType.PipelineShaderStageCreateInfo,
-				stage = StageFlags,
-				pName = EntryPoint,
-				module = dev.LoadSPIRVShader (SpirvPath),
-			};			
+		~TextRun() {
+			Dispose (false);
 		}
+		#endregion
 
-		#region IDisposable Support
-		private bool disposedValue = false; // Pour détecter les appels redondants
+		//public void AddReference () {
+		//	NativeMethods.vkvg_pattern_reference (handle);
+		//}
+		//public uint References () => NativeMethods.vkvg_pattern_get_reference_count (handle);
 
-		protected virtual void Dispose (bool disposing) {
-			if (!disposedValue) {
-				if (disposing)
-					EntryPoint.Dispose ();
+		public IntPtr Handle { get { return handle; } }
 
-				disposedValue = true;
+		public TextExtents Extents {
+			get {
+				TextExtents extents;
+				NativeMethods.vkvg_text_run_get_extents (handle, out extents);
+				return extents;
 			}
 		}
+
+		#region IDisposable implementation
 		public void Dispose () {
 			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+
+		protected virtual void Dispose (bool disposing) {
+			if (!disposing || handle == IntPtr.Zero)
+				return;
+
+			NativeMethods.vkvg_text_run_destroy (handle);
+			handle = IntPtr.Zero;
 		}
 		#endregion
 	}

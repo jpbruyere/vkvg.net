@@ -1,15 +1,22 @@
 ﻿using System;
-using VKE;
-using static VK.Vk;
+using CVKL;
 
 namespace VK {
     class Program : VkWindow {
+        static void Main(string[] args)
+        {
+            using (Program vke = new Program())
+            {
+                vke.Run();
+            }
+        }
+
         vkvg.Device vkvgDev;
         vkvg.Surface vkvgSurf;
 
-        Program () : base ("test", 1024,768) {
-            UpdateFreq = 2;
-            vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex);
+        Program () : base () {
+            vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex, vkvg.SampleCount.Sample_4);
+            UpdateFrequency = 10;
         }
             
         int a = 0;
@@ -18,14 +25,10 @@ namespace VK {
             using (vkvg.Context ctx = new vkvg.Context (vkvgSurf)) {
                 ctx.SetSource (0.4, 0.4, 0.4);
                 ctx.Paint ();
+                ctx.Translate(200, 200);
                 ctx.Rotate (0.05 * a);
-                /*ctx.LineWidth = 4;
-                ctx.MoveTo (100, a);
-                ctx.LineTo (200, a);
-                ctx.SetSource (0, 0, 1);
-                ctx.Stroke ();*/
-                float xc = 128.0f;
-                float yc = 128.0f;
+                float xc = 0.0f;
+                float yc = 0.0f;
                 float radius = 100.0f;
                 float angle1 = 45.0f * ((float)Math.PI / 180.0f);  /* angles are specified */
                 float angle2 = 180.0f * ((float)Math.PI / 180.0f);  /* in radians           */
@@ -58,11 +61,8 @@ namespace VK {
         public override void Update () {         
             vkvgDraw ();
         }
-
         protected override void OnResize () {
-
-            if (vkvgSurf != null)
-                vkvgSurf.Dispose ();
+            vkvgSurf?.Dispose ();
             vkvgSurf = new vkvg.Surface (vkvgDev, (int)swapChain.Width, (int)swapChain.Height);
 
             VkImage srcImg = new VkImage ((ulong)vkvgSurf.VkImage.ToInt64 ());
@@ -92,7 +92,7 @@ namespace VK {
                     dstOffset = default (VkOffset3D),
                     extent = new VkExtent3D { width = (uint)vkvgSurf.Width, height = (uint)vkvgSurf.Height }
                 };
-                vkCmdCopyImage (cmds[i].Handle, srcImg, VkImageLayout.TransferSrcOptimal,
+                Vk.vkCmdCopyImage (cmds[i].Handle, srcImg, VkImageLayout.TransferSrcOptimal,
                     swapChain.images[i].Handle, VkImageLayout.TransferDstOptimal, 1, ref cregion);
 
                 Utils.setImageLayout (cmds[i].Handle, swapChain.images[i].Handle, VkImageAspectFlags.Color,
@@ -106,7 +106,6 @@ namespace VK {
             }
             dev.WaitIdle ();
         }
-
         protected override void Dispose (bool disposing) {
 
             vkvgSurf.Dispose ();
@@ -115,10 +114,5 @@ namespace VK {
             base.Dispose (disposing);
         }
 
-        static void Main (string[] args) {
-            using (Program vke = new Program ()) {
-                vke.Run ();
-            }			
-        }
     }
 }
