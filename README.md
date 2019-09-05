@@ -14,7 +14,7 @@
   <a href="https://travis-ci.org/jpbruyere/vkvg.net">
     <img src="https://travis-ci.org/jpbruyere/vkvg.net.svg?branch=master">
   </a>
-  <a href="https://ci.appveyor.com/project/jpbruyere/vkvg.net">
+  <a href="https://ci.appveyor.com/project/jpbruyere/vkvg-net">
     <img src="https://ci.appveyor.com/api/projects/status/fdwb4e3ru7y8v3sp/branch/master?svg=true">
   </a>  
   <img src="https://img.shields.io/github/license/jpbruyere/vkvg.net.svg?style=flat-square">

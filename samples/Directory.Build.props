@@ -1,0 +1,29 @@
+﻿<Project>
+	<PropertyGroup>
+		<RootDirectory>$(MSBuildThisFileDirectory)</RootDirectory>
+
+		<TargetFrameworks>net471;netstandard2.0</TargetFrameworks>
+		<OutputType>Exe</OutputType>        
+
+		<OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
+		<IntermediateOutputPath>$(SolutionDir)build\obj\$(Configuration)\</IntermediateOutputPath>
+
+		<RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
+		<License>https://opensource.org/licenses/MIT</License>    
+
+
+		<RepositoryUrl>https://github.com/jpbruyere/vk.net</RepositoryUrl>
+		<License>MIT</License>
+		<Authors>Jean-Philippe Bruyère</Authors>
+
+		<LangVersion>7.2</LangVersion>
+		
+		<EnableDefaultItems>false</EnableDefaultItems>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>		
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="CVKL" Version="0.1.7-beta" />
+		<ProjectReference Include="..\vkvg\vkvg.net.csproj" />
+	</ItemGroup>
+	
+</Project>
