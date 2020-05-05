@@ -1,0 +1,9 @@
+﻿<Border Foreground="Jet"
+	MouseEnter="{Foreground=White}" MouseLeave="{Foreground=Jet}" CornerRadius="0">
+	<Label Font="{./Font}" Text="{./Caption}"
+		Width="Inherit"
+		Margin="3"
+		Background="{./Background}"
+		Foreground="{./Foreground}"
+		TextAlignment="Center"/>
+</Border>

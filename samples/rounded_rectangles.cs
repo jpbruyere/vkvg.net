@@ -2,19 +2,13 @@
 //
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 using System;
-using CVKL;
+using vke;
+using Glfw;
 
 namespace VK
 {
 	partial class Program : VkWindow
 	{
-		static void Main(string[] args)
-		{
-			using (Program vke = new Program())
-			{
-				vke.Run();
-			}
-		}
 		static void DrawRoundedRectangle(vkvg.Context gr, double x, double y, double width, double height, double radius)
 		{
 			if ((radius > height / 2) || (radius > width / 2))
@@ -33,6 +27,8 @@ namespace VK
 
 		public override void Update()
 		{
+			if (paused)
+				return;
 			using (vkvg.Context ctx = new vkvg.Context(vkvgSurf))
 			{
 				ctx.Clear();
@@ -45,7 +41,7 @@ namespace VK
 					float h = 0.3f * (float)(rnd.NextDouble() * Height);
 					float r = 10.0f * (float)(rnd.NextDouble());
 					randomize_color(ctx);
-					DrawRoundedRectangle(ctx, x, y, w, h, 5);
+					DrawRoundedRectangle(ctx, x, y, w, h, 20);
 					ctx.Fill();
 				}
 			}

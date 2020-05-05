@@ -2,33 +2,56 @@
 //
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 using System;
-using CVKL;
+using vke;
+using Glfw;
+using Vulkan;
 
 namespace VK
 {
-	partial class Program : VkWindow
+	public partial class Program : VkWindow
 	{
-		static Random rnd = new Random();
-		static uint iterations = 250;
+		static void Main (string [] args) {
+			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Unorm;
+			Instance.VALIDATION = true;
+			using (Program vke = new Program ()) {
+				vke.Run ();
+			}
+		}
 
-		vkvg.Device vkvgDev;
-		vkvg.Surface vkvgSurf;
+		protected Random rnd = new Random();
+		protected uint iterations = 200;
+		protected bool paused;
 
-		Program() : base()
-		{
-			vkvgDev = new vkvg.Device(instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex, vkvg.SampleCount.Sample_4);
+		protected vkvg.Device vkvgDev;
+		protected vkvg.Surface vkvgSurf;
+
+		protected override void initVulkan () {
+			base.initVulkan ();
+			vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex, vkvg.SampleCount.Sample_8);
 			UpdateFrequency = 0;//update on each frame to have effective drawing perfs
 		}
 
-		void randomize_color(vkvg.Context ctx)
+		protected void randomize_color (vkvg.Context ctx)
 		{
 			ctx.SetSource(rnd.NextDouble(), rnd.NextDouble(), rnd.NextDouble(), 0.5);
 		}
 
+		protected override void onKeyDown (Key key, int scanCode, Modifier modifiers)
+		{
+			if (key == Key.Space)
+				paused = !paused;
+			base.onKeyDown (key, scanCode, modifiers);
+
+		}
 		protected override void OnResize()
 		{
+			base.OnResize();
+
+			dev.WaitIdle();
+
 			vkvgSurf?.Dispose();
-			vkvgSurf = new vkvg.Surface(vkvgDev, (int)swapChain.Width, (int)swapChain.Height);
+			vkvgSurf = new vkvg.Surface(vkvgDev, (int)Width, (int)Height);
+			vkvgSurf.Clear();
 
 			VkImage srcImg = new VkImage((ulong)vkvgSurf.VkImage.ToInt64());
 

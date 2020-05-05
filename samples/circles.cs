@@ -2,21 +2,12 @@
 //
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 using System;
-using CVKL;
+using vke;
 
 namespace VK
 {
 	partial class Program : VkWindow
 	{
-		static void Main(string[] args)
-		{
-			using (Program vke = new Program())
-			{
-				vke.Run();
-			}
-		}
-
-
 		public override void Update()
 		{
 			using (vkvg.Context ctx = new vkvg.Context(vkvgSurf))

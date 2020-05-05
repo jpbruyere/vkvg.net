@@ -1,5 +1,5 @@
 //
-// Mono.Cairo.FontExtents.cs
+// from Mono.Cairo.FontExtents.cs
 //
 // Authors: Duncan Mak (duncan@ximian.com)
 //          Hisham Mardam Bey (hisham.mardambey@gmail.com)
@@ -30,7 +30,9 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
+// Copyright (c) 2018-2020  Jean-Philippe Bruyère <jp_bruyere@hotmail.com>
+//
+// This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 using System;
 using System.Runtime.InteropServices;
 

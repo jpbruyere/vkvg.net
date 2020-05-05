@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">	
+  <ItemGroup>
+    <Compile Remove="IconWidget.cs" />
+  </ItemGroup>
+	<ItemGroup>
+		<Compile Include="$(ProjectName).cs" />		
+		<Compile Include="VkCrowWindow.cs" />
+		<Compile Include="Command.cs" />
+	</ItemGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugType>full</DebugType>
+		<DefineConstants>TRACE;DEBUG;NETFRAMEWORK;NET472</DefineConstants>
+		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="SpirVTasks" Version="0.1.44-beta" />
+		<PackageReference Include="Crow" Version="0.8.11-beta" />
+	</ItemGroup>
+	<ItemGroup>
+		<GLSLShader Include="shaders\**\*.frag;shaders\**\*.vert;shaders\**\*.comp;shaders\**\*.geom" />
+		<EmbeddedResource Include="ui\*.*" />
+		<EmbeddedResource Include="ui\TemplateOverrides\*.*">
+			<LogicalName>Crow.%(EmbeddedResource.Filename)%(Extension)</LogicalName>
+		</EmbeddedResource>
+		<EmbeddedResource Include="ui\Icons\*.svg">
+			<LogicalName>Icons.%(EmbeddedResource.Filename)%(Extension)</LogicalName>
+		</EmbeddedResource>
+	</ItemGroup>
+</Project>

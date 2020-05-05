@@ -1,0 +1,7 @@
+﻿<?xml version="1.0"?>
+<Border Background="{./Background}" Margin="2" 
+	Foreground="DimGrey"
+	MouseEnter="{Foreground=White}"
+	MouseLeave="{Foreground=DimGrey}">
+	<Widget Background="{./Foreground}" Height="16" Width="16"/>	
+</Border>

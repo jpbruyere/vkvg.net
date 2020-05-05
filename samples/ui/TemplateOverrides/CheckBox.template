@@ -1,0 +1,8 @@
+﻿<Border Foreground="Transparent" MouseEnter="{Foreground=Grey}" MouseLeave="{Foreground=Transparent}">
+	<Label Font="{./Font}" Text="{./Caption}"
+		Width="Inherit"
+		Margin="1"
+		Background="{./Background}"
+		Foreground="{./Foreground}"
+		TextAlignment="Center"/>
+</Border>

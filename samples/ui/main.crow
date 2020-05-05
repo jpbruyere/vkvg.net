@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Border CornerRadius="5" Foreground="Black" HorizontalAlignment="Left" Width="Fit" Height="Fit" Background="0.1,0.1,0.1,0.8">
+	<VerticalStack Spacing="5" Margin="5">		
+		<EnumSelector RadioButtonStyle="DrawModeStyle" Fit="true" Caption="Draw Mode" EnumValue="{²CurrentDrawMode}" />
+		<Wrapper Height="Fit" Margin="2" Background="Red">
+			<RadioButton IsChecked="{²DMSelect}" Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/pointer.svg"/>
+			<RadioButton IsChecked="{²DMLines}" Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/pencil.svg"/>
+			<RadioButton IsChecked="{²DMRect}" Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/paint-brush.svg"/>
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/square.svg"/>
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/spinner.svg"/>			
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/picture.svg"/>
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/text-label.svg"/>
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/star-1.svg"/>
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/fill.svg"/>
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/eyedropper.svg"/>
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/eraser.svg"/>
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/move-arrows.svg"/>
+		</Wrapper>
+		<!--<TextBox Text="{²CurrentPath}"/>
+			<Border Foreground="Transparent" Background="Transparent" Fit="true" 
+				MouseEnter="{Foreground=White}"
+				MouseLeave="{Foreground=Transparent}"
+				MouseDown="{Background=RoyalBlue}"
+				MouseUp="{Background=Transparent}">
+			<Image Margin="2" Path="/mnt/devel/icons/vaadin-white/move-arrows.svg"/>
+		</Border>
+
+		<HorizontalStack Height="Fit" Margin="2">
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/blank-file.svg"/>
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/zoom-in.svg"/>
+			<RadioButton Template="#polytest.ui.RadioButton.template" Foreground="/mnt/devel/icons/vaadin-white/zoom-out.svg"/>
+		</HorizontalStack>-->
+		<Label Text="{fps}"/>
+		<CheckBox Caption="Closed" IsChecked="{²ClosedPath}"/>
+		<Label Text="{LineWidth}"/>
+		<Slider Height="10" Minimum="1" Maximum="150" SmallIncrement="1" LargeIncrement="5" Value="{²LineWidth}" Width="Stretched"/>
+		<Popper Template="#polytest.ui.ColorPopper.template" Caption="Fill" Foreground="{²FillColor}">
+			<ColorPicker CurrentColor="{²../Foreground}" Background="Jet" Width="200" Height="Fit" />
+		</Popper>		
+		<Popper Template="#polytest.ui.ColorPopper.template" Caption="Stroke" Foreground="{²StrokeColor}">
+			<ColorPicker CurrentColor="{²../Foreground}" Background="Jet" Width="200" Height="Fit" />
+		</Popper>
+		<EnumSelector Height="Fit" Caption="Line Join" EnumValue="{²LineJoin}"/>
+		<EnumSelector Height="Fit" Caption="Line Cap" EnumValue="{²LineCap}"/>
+		<CheckBox Caption="Enable Dashes" IsChecked="{²EnableDash}"/>
+		<ListBox Data="{Dashes}" Width="Stretched" Height="100">
+			<ItemTemplate>
+				<HorizontalStack Height="Fit" Background="Jet">
+					<Label Text="{Value}" Foreground="Black" Background="Grey"/>
+					<Slider Height="10" SmallIncrement="0.1" LargeIncrement="1" Background="Transparent" Foreground="Black" Width="Stretched" Maximum="500" Value="{²Value}"/>
+				</HorizontalStack>
+			</ItemTemplate>
+		</ListBox>
+	</VerticalStack>
+</Border>
+<!--
+	
+
+		
+		
+	</VerticalStack>
+-->

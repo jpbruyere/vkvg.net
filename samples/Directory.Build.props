@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<RootDirectory>$(MSBuildThisFileDirectory)</RootDirectory>
 
-		<TargetFrameworks>net471;netstandard2.0</TargetFrameworks>
+		<TargetFramework>net472</TargetFramework>
 		<OutputType>Exe</OutputType>        
 
 		<OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
@@ -11,8 +11,7 @@
 		<RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
 		<License>https://opensource.org/licenses/MIT</License>    
 
-
-		<RepositoryUrl>https://github.com/jpbruyere/vk.net</RepositoryUrl>
+		<RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
 		<License>MIT</License>
 		<Authors>Jean-Philippe Bruyère</Authors>
 
@@ -21,8 +20,15 @@
 		<EnableDefaultItems>false</EnableDefaultItems>
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>		
 	</PropertyGroup>
+	
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugType>full</DebugType>
+		<DefineConstants>TRACE;DEBUG</DefineConstants>
+		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+	</PropertyGroup>
+	
 	<ItemGroup>
-		<PackageReference Include="CVKL" Version="0.1.7-beta" />
+		<PackageReference Include="vke" Version="0.1.15-beta" />
 		<ProjectReference Include="..\vkvg\vkvg.net.csproj" />
 	</ItemGroup>
 	

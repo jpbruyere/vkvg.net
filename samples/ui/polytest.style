@@ -1,0 +1,24 @@
+﻿CheckBox {
+	Background="Transparent";
+	Checked="{Background=RoyalBlue}";
+	Unchecked="{Background=Transparent}";
+}
+RadioButton {
+	Width="Fit";
+	Height="Fit";
+	Background="DimGrey";
+	Checked="{Background=RoyalBlue}";
+	Unchecked="{Background=DimGrey}";
+}
+EnumSelector {
+	Width="Fit";
+	Height="Fit";
+	CornerRadius="5";
+	Foreground="Jet";
+	
+}
+DrawModeStyle {
+	Template="#polytest.ui.iconCheckBox.template";
+	//Initialized="GetDrawModeIcon";
+	//Initialized="{Background=Blue}";
+}

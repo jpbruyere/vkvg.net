@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<CheckBox Caption="{./Caption}" IsChecked="{²./IsPopped}" Foreground="{./Foreground}" Background="{./Background}">
+	<Template>
+		<VerticalStack>
+			<Border Foreground="Jet" Background="Grey" Fit="true" Margin="3" CornerRadius="5"
+					MouseEnter="{Foreground=White}"
+					MouseLeave="{Foreground=Jet}"
+					MouseDown="{Background=RoyalBlue}"
+					MouseUp="{Background=Grey}">
+				<Widget Background="{./Foreground}" Width="30" Height="20"/>
+			</Border>
+			<Label Text="{./Caption}"/>
+		</VerticalStack>
+	</Template>
+</CheckBox>			
