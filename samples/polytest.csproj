@@ -5,7 +5,9 @@
 	<ItemGroup>
 		<Compile Include="$(ProjectName).cs" />		
 		<Compile Include="VkCrowWindow.cs" />
-		<Compile Include="Command.cs" />
+		<Compile Include="Primitive.cs" />
+		<Compile Include="Shapes.cs" />
+		<Compile Include="Extensions.cs" />
 	</ItemGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DebugType>full</DebugType>
@@ -14,7 +16,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="SpirVTasks" Version="0.1.44-beta" />
-		<PackageReference Include="Crow" Version="0.8.11-beta" />
+		<PackageReference Include="Crow" Version="0.9.1-beta" />
 	</ItemGroup>
 	<ItemGroup>
 		<GLSLShader Include="shaders\**\*.frag;shaders\**\*.vert;shaders\**\*.comp;shaders\**\*.geom" />

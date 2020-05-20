@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Glfw;
 using vke;
@@ -21,21 +22,6 @@ namespace VK
 		Image,
 	}
 
-	public class ValueContainer<T> : Crow.IValueChange
-	{
-		public event EventHandler<Crow.ValueChangeEventArgs> ValueChanged;
-		T val;
-		public T Value {
-			get => val;
-			set {
-				if (EqualityComparer<T>.Default.Equals (value, val))
-					return;
-				val = value;
-				ValueChanged?.Invoke (this, new Crow.ValueChangeEventArgs ("Value", val));
-			}
-		}
-		public ValueContainer (T _val) { val = _val; }
-	}
 
 	public class polytest : VkCrowWindow
 	{
@@ -58,6 +44,8 @@ namespace VK
 		DescriptorSetLayout dslMain;
 		DescriptorSet dsUIimage, dsVKVGimg;
 
+		Stopwatch lastClickElapsed = new Stopwatch ();
+
 		void init_main_pipeline () {
 			cmds = cmdPool.AllocateCommandBuffer (swapChain.ImageCount);
 
@@ -69,9 +57,10 @@ namespace VK
 			cfg.RenderPass = new RenderPass (dev, swapChain.ColorFormat, VkSampleCountFlags.SampleCount1);
 			cfg.Layout = new PipelineLayout (dev, dslMain);
 			cfg.blendAttachments [0] = new VkPipelineColorBlendAttachmentState (true);
-			cfg.AddShader (VkShaderStageFlags.Vertex, "#vke.FullScreenQuad.vert.spv");
-			cfg.AddShader (VkShaderStageFlags.Fragment, "#polytest.simpletexture.frag.spv");
+			cfg.AddShader (dev, VkShaderStageFlags.Vertex, "#vke.FullScreenQuad.vert.spv");
+			cfg.AddShader (dev, VkShaderStageFlags.Fragment, "#polytest.simpletexture.frag.spv");
 			plMain = new GraphicPipeline (cfg);
+			cfg.DisposeShaders ();
 
 			dsUIimage = dsPool.Allocate (dslMain);
 			dsVKVGimg = dsPool.Allocate (dslMain);
@@ -94,176 +83,151 @@ namespace VK
 
 			loadWindow ("#polytest.ui.main.crow", this);
 
-			this.Dashes.Add (new ValueContainer<float>(20));
-			this.Dashes.Add (new ValueContainer<float> (10));
+			//this.Dashes.Add (new ValueContainer<float>(20));
+			//this.Dashes.Add (new ValueContainer<float> (10));
 		}
 
 
-		bool closedPath;
-		uint lineWidth = 20;
-		vkvg.LineJoin lineJoin = vkvg.LineJoin.Miter;
-		vkvg.LineCap lineCap = vkvg.LineCap.Butt;
-		Crow.Color fillColor = Crow.Color.RoyalBlue.AdjustAlpha (0.7f);
-		Crow.Color strokeColor = Crow.Color.GreenYellow.AdjustAlpha (0.6f);
-		bool enableDash;
-		Crow.ObservableList<ValueContainer<float>> dashes = new Crow.ObservableList<ValueContainer<float>> ();
+
+
 		DrawMode currentDrawMode = DrawMode.Select;
 
-		vkvg.Command lastCmd = null;
-
-		public bool ClosedPath {
-			get => closedPath;
-			set {
-				if (value == closedPath)
-					return;
-				closedPath = value;
-				NotifyValueChanged ("ClosedPath", closedPath);
-			}
-		}
-		public uint LineWidth {
-			get => lineWidth;
-			set {
-				if (value == lineWidth)
-					return;
-				lineWidth = value;
-				NotifyValueChanged ("LineWidth", lineWidth);
-			}
-		}
-		public vkvg.LineJoin LineJoin {
-			get => lineJoin;
-			set {
-				if (value == lineJoin)
-					return;
-				lineJoin = value;
-				NotifyValueChanged ("LineJoin", lineJoin);
-			}
-		}
-		public vkvg.LineCap LineCap {
-			get => lineCap;
-			set {
-				if (value == lineCap)
-					return;
-				lineCap = value;
-				NotifyValueChanged ("LineCap", lineCap);
-			}
-		}
-		public Crow.Color FillColor {
-			get => fillColor;
-			set {
-				if (value == fillColor)
-					return;
-				fillColor = value;
-				NotifyValueChanged ("FillColor", fillColor);
-			}
-		}
-		public Crow.Color StrokeColor {
-			get => strokeColor;
-			set {
-				if (value == strokeColor)
-					return;
-				strokeColor = value;
-				NotifyValueChanged ("StrokeColor", strokeColor);
-			}
-		}
-		public bool EnableDash {
-			get => enableDash;
-			set {
-				if (value == enableDash)
-					return;
-				enableDash = value;
-				NotifyValueChanged ("EnableDash", enableDash);
-			}
-		}
-		public Crow.ObservableList<ValueContainer<float>> Dashes {
-			set {
-				dashes = value;
-				NotifyValueChanged ("Dashes", dashes);
-			}
-			get => dashes;
-		}
 		public DrawMode CurrentDrawMode {
 			get => currentDrawMode;
 			set {
 				if (value == currentDrawMode)
 					return;
 				currentDrawMode = value;
+				if (currentDrawMode == DrawMode.Select)
+					SetCursor (CursorShape.Arrow);
+				else
+					SetCursor (CursorShape.Crosshair);
 				NotifyValueChanged ("CurrentDrawMode", currentDrawMode);
 			}
 		}
 
-		string currentPath;
-		List<string> pathes = new List<string> ();
-
-		public string CurrentPath {
-			get => currentPath;
+		public vkvg.Shape.Shape CurrentShape {
+			get => currentShape;
 			set {
-				if (currentPath == value)
+				if (currentShape == value)
 					return;
-				currentPath = value;
-				redraw = true;
-				NotifyValueChanged ("CurrentPath", currentPath);
+				currentShape = value;
+				NotifyValueChanged ("CurrentShape", currentShape);
 			}
 		}
 
-		List<vkvg.Point> points = new List<vkvg.Point> ();
 
-		vkvg.CommandCollection commands = new vkvg.CommandCollection ();
+		public Crow.ObservableList<vkvg.Shape.Shape> Shapes = new Crow.ObservableList<vkvg.Shape.Shape> ();
+		vkvg.Shape.Shape currentShape;
+		vkvg.PathCommand curPathCmd;
+		int curPathCmdPoint;
+		vkvg.PointD? lastMousePos;
 
-		int curPoint = -1;
-		int cpRadius = 10;
-		double selRadius = 3.5;
+
 		bool locked = false;
 		bool redraw;
 
-		bool isOver(vkvg.Point p, int x, int y) =>
-			p.X - cpRadius < x && p.X + cpRadius > x && p.Y - cpRadius < y && p.Y + cpRadius > y;
+
+		void draw_current_path () {
+			using (vkvg.Context ctx = new vkvg.Context (vkvgSurf)) {
+				ctx.SetSource (1, 1, 1);
+				ctx.Paint ();
+
+				foreach (vkvg.Shape.Shape shape in Shapes) {
+					shape.Draw (ctx, (currentDrawMode != DrawMode.Select && lastMousePos != null) ? lastMousePos : null);
+					if (shape == currentShape)
+						shape.DrawPoints (ctx, curPathCmd, curPathCmdPoint);
+				}
+			}
+		}
 
 		protected override void onMouseMove(double xPos, double yPos)
 		{
 			base.onMouseMove(xPos, yPos);
 
-			if (MouseIsInInterface)
+			if (MouseIsInInterface) {
+				lastMousePos = null;
 				return;
+			}
 
-			if (locked)
-			{
-				if (curPoint < 0)
-					return;
-				points[curPoint] = new vkvg.Point((int)xPos, (int)yPos);
-			}
-			else {
-				for (int i = 0; i < points.Count; i++)
-				{
-					if (!isOver(points[i], (int)lastMouseX, (int)lastMouseY))
-						continue;
-					curPoint = i;
-					break;
+
+			vkvg.PointD m = new vkvg.Point ((int)xPos, (int)yPos);
+
+			if (locked) {
+				if (currentShape != null) {
+					if (curPathCmd != null) {
+						curPathCmd [curPathCmdPoint] = m - currentShape.Translation;
+					} else if (lastMousePos != null)
+						currentShape.Translation += m - (vkvg.PointD)lastMousePos;
 				}
+
+			} else {
+				if (currentShape == null) {
+					curPathCmd = null;
+					curPathCmdPoint = -1;
+				} else {
+					currentShape.IsOver (m, out curPathCmd, out curPathCmdPoint);
+				}
+				/*					foreach (vkvg.PathCommand cmd in currentPath.OfType<vkvg.PathCommand> ()) {
+										for (int i = 0; i < cmd.Length; i++) {
+											if (!isOver (cmd [i], m))
+												continue;
+											curPathCmd = cmd;
+											curPathCmdPoint = i;
+											return;
+										}
+									}*/
 			}
+			lastMousePos = m;
 		}
 
-		protected override void onMouseButtonDown(MouseButton button)
-		{
-			base.onMouseButtonDown(button);
+		protected override void onMouseButtonDown (MouseButton button) {
+			base.onMouseButtonDown (button);
 
-			if (MouseIsInInterface)
+			if (MouseIsInInterface || lastMousePos == null)
 				return;
 
 			if (button != Glfw.MouseButton.Left)
 				return;
 
-			if (CurrentDrawMode == DrawMode.Lines) {
-
-				curPoint = points.Count;
-				points.Add (new vkvg.Point ((int)lastMouseX, (int)lastMouseY));
+			if (lastClickElapsed.IsRunning && lastClickElapsed.ElapsedMilliseconds < 200 && currentDrawMode == DrawMode.Lines) {
+				//double click
+				CurrentDrawMode = DrawMode.Select;
+				return;
 			}
+			if (currentDrawMode == DrawMode.Select) {
 
+			} else if (currentDrawMode == DrawMode.Lines) {
+				if (currentShape == null)
+					Shapes.Add (CurrentShape = new vkvg.Shape.Path ((vkvg.PointD)lastMousePos));
+				else
+					CurrentShape.PathCommands.Add (new vkvg.Line () { A = (vkvg.PointD)lastMousePos });
+			} else if (currentShape == null) {
+				switch (currentDrawMode) {
+				case DrawMode.Rect:
+
+					break;
+				case DrawMode.Arc:
+					break;
+				case DrawMode.Star:
+					break;
+				case DrawMode.Image:
+					break;
+				}
+			}
 			locked = true;
 		}
 		protected override void onMouseButtonUp(MouseButton button)
 		{
 			base.onMouseButtonUp(button);
-			locked &= button != Glfw.MouseButton.Left;
+			if (!(button == Glfw.MouseButton.Left && locked))
+				return;
+				
+			if (currentDrawMode != DrawMode.Lines)
+				CurrentDrawMode = DrawMode.Select;
+
+			locked = false;
+			lastClickElapsed.Restart ();
 		}
 		protected override void onKeyDown (Key key, int scanCode, Modifier modifiers)
 		{
@@ -332,29 +296,23 @@ namespace VK
 		{
 			base.Update ();
 
-
+			draw_current_path ();
 			//if (!redraw)
 			//	return;
 
-			using (vkvg.Context ctx = new vkvg.Context(vkvgSurf))
+			/*using (vkvg.Context ctx = new vkvg.Context(vkvgSurf))
 			{
 				ctx.SetSource(1, 1, 1);
 				ctx.Paint();
 
-				if (enableDash && dashes.Count > 0)
-					ctx.Dashes = dashes.Select (d => d.Value).ToArray();
-				ctx.LineWidth = lineWidth;
-				ctx.LineJoin = lineJoin;
-				ctx.LineCap = lineCap;
+				
 
-				ctx.SetSource (strokeColor.R, strokeColor.G, strokeColor.B, strokeColor.A);
-
-				/*try {
-					vkvg.PathParser pp = new vkvg.PathParser (currentPath);
-					pp.Draw (ctx);
-				} catch (Exception ex) {
-					Console.WriteLine (ex);
-				}*/
+				//try {
+				//	vkvg.PathParser pp = new vkvg.PathParser (currentPath);
+				//	pp.Draw (ctx);
+				//} catch (Exception ex) {
+				//	Console.WriteLine (ex);
+				//}
 
 
 				if (points.Count > 0) {
@@ -410,7 +368,7 @@ namespace VK
 				case DrawMode.Image:
 					break;
 				}
-			}
+			}*/
 		}
 
 		protected override void Dispose (bool disposing)

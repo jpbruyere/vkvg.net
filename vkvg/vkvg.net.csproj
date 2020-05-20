@@ -2,12 +2,12 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework> 
     
-    <AssemblyVersion>0.2.2</AssemblyVersion>
+    <AssemblyVersion>0.3.0</AssemblyVersion>
     <Description>net bindings for vkvg</Description>        
     <Copyright>Copyright 2018-2019 (c) Jean-Philippe Bruyère. All rights reserved.</Copyright>
      <!-- Package Info -->    
     <PackageTags>Vulkan Vector Graphics 3D GPU vkvg Khronos</PackageTags>
-    <PackageVersion>$(AssemblyVersion)</PackageVersion>
+    <PackageVersion>$(AssemblyVersion)-beta</PackageVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/jpbruyere/vkvg.net</PackageProjectUrl>        
     <License>MIT</License>

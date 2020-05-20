@@ -2,6 +2,8 @@
 //
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 
+using System;
+
 namespace vkvg {
 
 	public struct PointD
@@ -22,5 +24,24 @@ namespace vkvg {
 			get { return y; }
 			set { y = value; }
 		}
+		public double Length {
+			get { return Math.Sqrt (Math.Pow (x, 2) + Math.Pow (y, 2)); }
+		}
+		public static PointD operator / (PointD p, double d) {
+			return new PointD (p.X / d, p.Y / d);
+		}
+		public static PointD operator * (PointD p, double d) {
+			return new PointD (p.X * d, p.Y * d);
+		}
+		public static PointD operator + (PointD p1, PointD p2) {
+			return new PointD (p1.X + p2.X, p1.Y + p2.Y);
+		}
+		public static PointD operator + (PointD p, double i) {
+			return new PointD (p.X + i, p.Y + i);
+		}
+		public static PointD operator - (PointD p1, PointD p2) {
+			return new PointD (p1.X - p2.X, p1.Y - p2.Y);
+		}
+
 	}
 }

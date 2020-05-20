@@ -28,7 +28,7 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="vke" Version="0.1.15-beta" />
+		<PackageReference Include="vke" Version="0.1.20-beta" />
 		<ProjectReference Include="..\vkvg\vkvg.net.csproj" />
 	</ItemGroup>
 	

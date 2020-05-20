@@ -161,7 +161,10 @@ namespace vkvg
         {
             NativeMethods.vkvg_translate(handle, (float)dx, (float)dy);
         }
-        public void Rotate(double alpha)
+		public void Translate (PointD p) {
+			NativeMethods.vkvg_translate (handle, (float)p.X, (float)p.Y);
+		}
+		public void Rotate(double alpha)
         {
             NativeMethods.vkvg_rotate(handle, (float)alpha);
         }

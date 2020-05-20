@@ -26,7 +26,7 @@ namespace vke {
 		#endregion
 
 		public Image uiImage;
-		protected Crow.Interface iFace;
+		protected Interface iFace;
 		public bool MouseIsInInterface =>
 			iFace.HoverWidget != null;
 		public Device Dev => dev;
@@ -112,7 +112,7 @@ namespace vke {
 			uiImage.Descriptor.imageLayout = VkImageLayout.ShaderReadOnlyOptimal;
 			uiImage.Map ();
 
-			CommandBuffer cmd = cmdPool.AllocateAndStart (VkCommandBufferUsageFlags.OneTimeSubmit);
+			PrimaryCommandBuffer cmd = cmdPool.AllocateAndStart (VkCommandBufferUsageFlags.OneTimeSubmit);
 			uiImage.SetLayout (cmd, VkImageAspectFlags.Color,
 				VkImageLayout.Undefined, VkImageLayout.ShaderReadOnlyOptimal);
 			presentQueue.EndSubmitAndWait (cmd, true);
@@ -146,40 +146,5 @@ namespace vke {
 				iFace.DeleteWidget (g);
 		}
 
-		#region Crow.IBackend implementation
-		public void Init (Crow.Interface iFace)
-		{
-
-		}
-
-		//Crow.MouseCursor Crow.IBackend.Cursor {
-		//	set {
-		//		CursorShape cs = CursorShape.Arrow;
-
-		//		switch (value) {
-		//		case MouseCursor.IBeam:
-		//			cs = CursorShape.IBeam;
-		//			break;
-		//		case MouseCursor.Crosshair:
-		//			cs = CursorShape.Crosshair;
-		//			break;
-		//		case MouseCursor.Hand:
-		//			cs = CursorShape.Hand;
-		//			break;
-		//		case MouseCursor.H:
-		//		case MouseCursor.Right:
-		//		case MouseCursor.Left:
-		//			cs = CursorShape.HResize;
-		//			break;
-		//		case MouseCursor.V:
-		//		case MouseCursor.Top:
-		//		case MouseCursor.Bottom:
-		//			cs = CursorShape.VResize;
-		//			break;
-		//		}
-		//		SetCursor (cs);
-		//	}
-		//}
-		#endregion
 	}
 }

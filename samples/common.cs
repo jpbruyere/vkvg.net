@@ -25,6 +25,9 @@ namespace VK
 		protected vkvg.Device vkvgDev;
 		protected vkvg.Surface vkvgSurf;
 
+		public override string [] EnabledInstanceExtensions =>
+			new string [] { Ext.I.VK_EXT_debug_utils };
+
 		protected override void initVulkan () {
 			base.initVulkan ();
 			vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex, vkvg.SampleCount.Sample_8);

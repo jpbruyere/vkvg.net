@@ -133,4 +133,11 @@ namespace vkvg
         EvenOdd,
         NonZero,
     }
+	public enum Antialias
+	{
+		Default,
+		None,
+		Grey,
+		Subpixel,
+	}
 }

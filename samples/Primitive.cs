@@ -17,7 +17,8 @@ namespace vkvg
 		Command current;
 
 		internal CommandEnumerator (CommandCollection cmds) {
-			last = current = cmds.Last;
+			last = cmds.Last;
+			current = null;
 		}
 
 		public Command Current => current;
@@ -28,12 +29,13 @@ namespace vkvg
 		}
 
 		public bool MoveNext () {
-			current = current?.Previous;
+			current = (current == null) ?
+				last : current.Previous;
 			return current != null;
 		}
 
 		public void Reset () {
-			current = last;
+			current = null;
 		}
 	}
 	/// <summary>
@@ -46,6 +48,12 @@ namespace vkvg
 		public IEnumerator<Command> GetEnumerator () => new CommandEnumerator (this);
 		IEnumerator IEnumerable.GetEnumerator () => new CommandEnumerator (this);
 		public bool IsEmpty => last == null;
+
+		public CommandCollection () { }
+		public CommandCollection (params Command[] cmds) {
+			foreach (var cmd in cmds) 
+				Add (cmd);
+		}
 
 		public void Add (Command cmd) {
 			cmd.Previous = last;
@@ -70,23 +78,131 @@ namespace vkvg
 			}
 		}
 	}
-	public class Command {
-		public bool relative;
+	public abstract class Command {
 		public Command Previous;
-	
+		public abstract void Execute (Context ctx);
 	}
-	public class PathCommand
+	public enum DrawCommandType
 	{
-		public PointD LastPoint;
+		Stroke,
+		Fill,
+		Clip,
+		Paint
 	}
-	public class MoveTo : Command
+	public class DrawCommand : Command
 	{
+		public DrawCommandType DrawType;
+		public bool preserve;
+		public override void Execute (Context ctx) {
+			switch (DrawType) {
+			case DrawCommandType.Stroke:
+				if (preserve)
+					ctx.StrokePreserve ();
+				else
+					ctx.Stroke ();
+				break;
+			case DrawCommandType.Fill:
+				if (preserve)
+					ctx.FillPreserve ();
+				else
+					ctx.Fill ();
+				break;
+			case DrawCommandType.Clip:
+				if (preserve)
+					ctx.ClipPreserve ();
+				else
+					ctx.Clip ();
+				break;
+			case DrawCommandType.Paint:
+				ctx.Paint ();
+				break;			
+			}
+		}
+	}
+	public abstract class PathCommand : Command
+	{
+		static double cpRadius = 10, selRadius = 3;
+		public bool relative;
+		public PointD A;
+		public virtual PointD this [int i] {
+			get => A;
+			set => A = value;
+		}
+		public virtual int Length => 1;
+		public virtual void DrawPoints (Context ctx, int selectedPoint = -1) {
+			for (int i = 0; i < Length; i++) {
+				PointD p = this [i];
+
+				if (i == selectedPoint)
+					ctx.SetSource (1, 0.6, 0.6, 0.6);
+				else
+					ctx.SetSource (0.6, 0.6, 1, 0.6);
+
+				ctx.Rectangle (p.X - selRadius, p.Y - selRadius, selRadius * 2, selRadius * 2);
+				ctx.FillPreserve ();
+
+				if (i == selectedPoint)
+					ctx.SetSource (1, 0.3, 0.3, 0.8);
+				else
+					ctx.SetSource (0.3, 0.3, 1, 0.8);
+
+				ctx.Stroke ();
+			}
+
+		}
+		public virtual bool IsOver (PointD m, out int pointIndex) {
+			for (int i = 0; i < Length; i++) {
+				PointD p = this [i];
+				if (p.X - cpRadius < m.X && p.X + cpRadius > m.X && p.Y - cpRadius < m.Y && p.Y + cpRadius > m.Y) {
+					pointIndex = i;
+					return true;
+				}
+			}
+			pointIndex = -1;
+			return false;
+		}
 
 	}
-	public class LineTo : Command
+	public class Move : PathCommand
 	{
-		public PointD p;
-		public override string ToString () => relative ? $"l ${p.X},${p.Y}" : $"L ${p.X},${p.Y}";
+		public override void Execute (Context ctx) {
+			if (relative)
+				ctx.RelMoveTo (A.X, A.Y); 
+			else
+				ctx.MoveTo(A.X,A.Y);
+		}
+	}
+	public class Line : PathCommand
+	{
+		public override void Execute (Context ctx) {
+			if (relative)
+				ctx.RelLineTo (A.X, A.Y);
+			else
+				ctx.LineTo (A.X, A.Y);
+		}
+		//public override string ToString () => relative ? $"l ${p.X},${p.Y}" : $"L ${p.X},${p.Y}";
+	}
+	public class Arc : PathCommand
+	{
+		public bool Negative;
+		public double radius, startAngle, endAngle;
+
+		public override void Execute (Context ctx) {
+			if (Negative)
+				ctx.ArcNegative (A.X, A.Y, radius, startAngle, endAngle);
+			else
+				ctx.Arc (A.X, A.Y, radius, startAngle, endAngle);
+		}
+	}
+	public class Curve : PathCommand
+	{
+		public PointD controlPoint1, controlPoint2;
+		public override void Execute (Context ctx) {
+			if (relative)
+				ctx.RelCurveTo (controlPoint1.X, controlPoint1.Y, controlPoint2.X, controlPoint2.Y, A.X, A.Y);
+			else
+				ctx.CurveTo (controlPoint1.X, controlPoint1.Y, controlPoint2.X, controlPoint2.Y, A.X, A.Y);
+		}
 	}
 
 	static class ExtensionMethods
