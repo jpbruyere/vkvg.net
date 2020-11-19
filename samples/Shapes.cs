@@ -41,7 +41,7 @@ namespace vkvg.Shape
 		LineJoin lineJoin = LineJoin.Miter;
 		LineCap lineCap = LineCap.Butt;
 		Fill fillColor;
-		Fill strokeColor = Color.GreenYellow.AdjustAlpha (0.6f);
+		Fill strokeColor = Colors.GreenYellow;
 		bool enableDash;
 		ObservableList<ValueContainer<float>> dashes = new ObservableList<ValueContainer<float>> ();
 		protected vkvg.CommandCollection pathCommands;
@@ -123,6 +123,7 @@ namespace vkvg.Shape
 			}
 		}
 		public virtual void Draw (Context ctx, PointD? mousePos = null) {
+			ctx.FillRule = FillRule.EvenOdd;
 			ctx.Save ();
 			ctx.Translate (Translation);
 			if (enableDash && dashes.Count > 0)

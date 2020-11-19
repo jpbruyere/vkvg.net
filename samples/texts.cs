@@ -18,8 +18,8 @@ namespace VK
 
 				for (int i = 0; i < iterations; i++)
 				{
-					float x = 0.8f * (float)(rnd.NextDouble() * Width) + 10f;
-					float y = 0.9f * (float)(rnd.NextDouble() * Height) + 10f;
+					float x = 0.8f * (float)(rnd.NextDouble() * Width);
+					float y = 0.9f * (float)(rnd.NextDouble() * Height);
 					uint s = (uint)(rnd.NextDouble() * 80) + 1;
 					randomize_color(ctx);
 					ctx.FontSize = s;

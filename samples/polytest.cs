@@ -9,6 +9,7 @@ using System.Linq;
 using Glfw;
 using vke;
 using Vulkan;
+using Image = vke.Image;
 
 namespace VK
 {
@@ -27,6 +28,9 @@ namespace VK
 	{
 		static void Main (string [] args)
 		{
+#if NETCOREAPP
+			DllMapCore.Resolve.Enable (true);
+#endif
 			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Unorm;
 			Instance.VALIDATION = true;
 			using (polytest vke = new polytest ()) {
@@ -149,7 +153,6 @@ namespace VK
 				lastMousePos = null;
 				return;
 			}
-
 
 			vkvg.PointD m = new vkvg.Point ((int)xPos, (int)yPos);
 

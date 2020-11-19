@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">  
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework> 
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SolutionDir>$(MSBuildThisFileDirectory)..\</SolutionDir>
     
     <AssemblyVersion>0.3.0</AssemblyVersion>
     <Description>net bindings for vkvg</Description>        
@@ -15,9 +16,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
     <Authors>Jean-Philippe Bruyère</Authors>
-		
-	<OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
-	<IntermediateOutputPath>$(SolutionDir)build\obj\$(Configuration)\</IntermediateOutputPath>
+	  <OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
+	  <IntermediateOutputPath>$(SolutionDir)build\obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup> 
 	
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

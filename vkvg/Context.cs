@@ -91,7 +91,7 @@ namespace vkvg
         }
         public void ShowText(string txt)
         {
-            NativeMethods.vkvg_show_text(handle, txt);
+            NativeMethods.vkvg_show_text(handle, TerminateUtf8(txt));
         }
         public void ShowText(TextRun textRun)
         {

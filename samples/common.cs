@@ -17,6 +17,7 @@ namespace VK
 				vke.Run ();
 			}
 		}
+		public Program() : base("VkWindow", 800, 600, false) { }
 
 		protected Random rnd = new Random();
 		protected uint iterations = 200;

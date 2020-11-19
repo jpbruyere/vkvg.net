@@ -12,6 +12,10 @@ namespace VK
 	public class Program : VkWindow
 	{
 		static void Main (string [] args) {
+#if NETCOREAPP
+			DllMapCore.Resolve.Enable (true);
+#endif
+
 			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Unorm;
 			SwapChain.IMAGES_USAGE = VkImageUsageFlags.TransferSrc | VkImageUsageFlags.TransferDst;
 			Instance.VALIDATION = true;
@@ -26,14 +30,14 @@ namespace VK
 		};
 
 		protected Random rnd = new Random ();
-		protected uint iterations = 100;
+		protected uint iterations = 1000;
 		protected bool paused;
 
 		protected vkvg.Device vkvgDev;
 		protected vkvg.Surface vkvgSurf;
 
 		volatile int activeThreads = 0;
-		const int threadCount = 10;
+		const int threadCount = 20;
 		CountdownEvent countdown = new CountdownEvent (threadCount);
 
 		void drawingThread () {
@@ -43,7 +47,7 @@ namespace VK
 			lock (vkvgSurf) {
 				using (vkvg.Context ctx = new vkvg.Context (vkvgSurf)) {
 					//Console.WriteLine ($"{threadId}:draw");
-
+					ctx.Clear ();
 					for (int i = 0; i < iterations; i++) {
 						float x1 = (float)(rnd.NextDouble () * Width);
 						float y1 = (float)(rnd.NextDouble () * Height);

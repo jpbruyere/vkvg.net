@@ -120,7 +120,7 @@ namespace vkvg
         [DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void vkvg_set_font_size(IntPtr ctx, uint size);
         [DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void vkvg_show_text(IntPtr ctx, string text);
+        internal static extern void vkvg_show_text(IntPtr ctx, byte [] utf8);
 
         [DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void vkvg_save(IntPtr ctx);

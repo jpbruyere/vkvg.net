@@ -25,6 +25,8 @@ namespace vke {
 		}
 		#endregion
 
+		public VkCrowWindow () : base ("VkWindow", 800, 600, false) { }
+
 		public Image uiImage;
 		protected Interface iFace;
 		public bool MouseIsInInterface =>
