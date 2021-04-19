@@ -21,7 +21,7 @@ namespace vkvg
             Dispose(false);
         }
 
-        public IntPtr Handle { get { return handle; } }
+        public IntPtr Handle => handle;
 
         public void AddReference()
         {

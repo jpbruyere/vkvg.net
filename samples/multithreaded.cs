@@ -12,9 +12,6 @@ namespace VK
 	public class Program : VkWindow
 	{
 		static void Main (string [] args) {
-#if NETCOREAPP
-			DllMapCore.Resolve.Enable (true);
-#endif
 
 			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Unorm;
 			SwapChain.IMAGES_USAGE = VkImageUsageFlags.TransferSrc | VkImageUsageFlags.TransferDst;

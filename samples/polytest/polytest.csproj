@@ -4,10 +4,10 @@
   </ItemGroup>
 	<ItemGroup>
 		<Compile Include="$(ProjectName).cs" />		
-		<Compile Include="VkCrowWindow.cs" />
+		<Compile Include="..\VkCrowWindow.cs" />
 		<Compile Include="Primitive.cs" />
 		<Compile Include="Shapes.cs" />
-		<Compile Include="Extensions.cs" />
+		<Compile Include="..\Extensions.cs" />
 	</ItemGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DebugType>full</DebugType>
@@ -15,11 +15,12 @@
 		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="SpirVTasks" Version="0.1.44-beta" />
-		<PackageReference Include="Crow" Version="0.9.1-beta" />
+		<PackageReference Include="Crow" Version="0.9.4-beta" />
+		<PackageReference Include="SpirVTasks" Version="0.1.44" />
+		<!--<PackageReference Include="glfw-sharp" Version="0.2.12-beta" />-->
 	</ItemGroup>
 	<ItemGroup>
-		<GLSLShader Include="shaders\**\*.frag;shaders\**\*.vert;shaders\**\*.comp;shaders\**\*.geom" />
+		<GLSLShader Include="..\shaders\**\*.frag;..\shaders\**\*.vert;..\shaders\**\*.comp;..\shaders\**\*.geom" />
 		<EmbeddedResource Include="ui\*.*" />
 		<EmbeddedResource Include="ui\TemplateOverrides\*.*">
 			<LogicalName>Crow.%(EmbeddedResource.Filename)%(Extension)</LogicalName>

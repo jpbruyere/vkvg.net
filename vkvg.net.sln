@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{042B
 		samples\Directory.Build.props = samples\Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "polytest", "samples\polytest.csproj", "{4039EF8A-7FBD-456F-B01D-506B40008D6C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "polytest", "samples\polytest\polytest.csproj", "{4039EF8A-7FBD-456F-B01D-506B40008D6C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rectangles", "samples\rectangles.csproj", "{6B1866F1-FCD4-4A93-BCE2-8FAF5CEB275F}"
 EndProject

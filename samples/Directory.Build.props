@@ -19,7 +19,7 @@
 		
 		<EnableDefaultItems>false</EnableDefaultItems>
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-		<AppConfig>App.config</AppConfig>
+		
 		
 	</PropertyGroup>
 	
@@ -30,9 +30,10 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="vke" Version="0.1.21-beta" />
-		<PackageReference Include="DllMapCore" Version="0.1.1" />
-		<ProjectReference Include="..\vkvg\vkvg.net.csproj" />
+		<PackageReference Include="vke" Version="0.1.21" />
+		<PackageReference Include="glfw-sharp" Version="0.2.12-beta" />		
+		<!--<PackageReference Include="DllMapCore" Version="0.1.1" />-->
+		<ProjectReference Include="$(SolutionDir)vkvg\vkvg.net.csproj" />
 	</ItemGroup>
 	
 </Project>

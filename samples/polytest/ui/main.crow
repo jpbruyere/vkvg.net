@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
-<Border CornerRadius="5" Foreground="Black" HorizontalAlignment="Left" Width="Fit" Height="Fit" Background="0.1,0.1,0.1,0.8">
+<Border CornerRadius="5" Foreground="Red" HorizontalAlignment="Left" Width="Fit" Height="Fit" Background="0.1,0.1,0.1,0.8">
 	<VerticalStack Spacing="5" Margin="5">		
 		<EnumSelector RadioButtonStyle="DrawModeStyle" Fit="true" Caption="Draw Mode" EnumValue="{²CurrentDrawMode}" />
 		<Label Text="{fps}"/>
 		<VerticalStack Height="Fit" DataSource="{CurrentShape}">
-			<CheckBox Caption="Closed" IsChecked="{²ClosedPath}"/>
+			<Label Text="{}" Background="Blue" MinimumSize="20,0"/>
+			<CheckBox Caption="Closed" IsChecked="{²Closed}"/>
 			<Label Text="{LineWidth}"/>
 			<Slider Height="10" Minimum="1" Maximum="150" SmallIncrement="1" LargeIncrement="5" Value="{²LineWidth}" Width="Stretched"/>
 			<Popper Template="#polytest.ui.ColorPopper.template" Caption="Fill" Foreground="{²FillColor}">

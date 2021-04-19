@@ -181,5 +181,6 @@ namespace vkvg.Shape
 		public Shape (PointD firstPoint) {
 			pathCommands = new CommandCollection(new vkvg.Move () { A = firstPoint });
 		}
+		public override string ToString() => $"{this?.GetType()}";
 	}
 }

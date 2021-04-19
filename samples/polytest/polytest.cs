@@ -1,8 +1,11 @@
-﻿// Copyright (c) 2019  Jean-Philippe Bruyère <jp_bruyere@hotmail.com>
+﻿using System.Security.AccessControl;
+// Copyright (c) 2019  Jean-Philippe Bruyère <jp_bruyere@hotmail.com>
 //
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Reflection;
+using NativeLibrary = System.Runtime.InteropServices.NativeLibrary;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -24,16 +27,32 @@ namespace VK
 	}
 
 
-	public class polytest : VkCrowWindow
+	public class Polytest : VkCrowWindow
 	{
+#if NETCOREAPP		
+		static IntPtr resolveUnmanaged (Assembly assembly, String libraryName) {
+			
+			switch (libraryName)
+			{
+				case "glfw3":
+					return  System.Runtime.InteropServices.NativeLibrary.Load("glfw", assembly, null);
+				case "rsvg-2.40":
+					return  System.Runtime.InteropServices.NativeLibrary.Load("rsvg-2", assembly, null);
+			}
+			Console.WriteLine ($"[UNRESOLVE] {assembly} {libraryName}");			
+			return IntPtr.Zero;
+		}
+
+		static Polytest () {
+			System.Runtime.Loader.AssemblyLoadContext.Default.ResolvingUnmanagedDll+=resolveUnmanaged;
+		}
+#endif		
 		static void Main (string [] args)
 		{
-#if NETCOREAPP
-			DllMapCore.Resolve.Enable (true);
-#endif
+
 			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Unorm;
 			Instance.VALIDATION = true;
-			using (polytest vke = new polytest ()) {
+			using (Polytest vke = new Polytest ()) {
 				vke.Run ();
 			}
 		}
