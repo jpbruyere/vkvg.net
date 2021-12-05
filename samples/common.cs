@@ -2,9 +2,6 @@
 //
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 using System;
-using System.Reflection;
-using NativeLibrary = System.Runtime.InteropServices.NativeLibrary;
-
 using vke;
 using Glfw;
 using Vulkan;
@@ -13,24 +10,6 @@ namespace VK
 {
 	public partial class Program : VkWindow
 	{
-#if NETCOREAPP		
-		static IntPtr resolveUnmanaged (Assembly assembly, String libraryName) {
-			
-			switch (libraryName)
-			{
-				case "glfw3":
-					return  NativeLibrary.Load("glfw", assembly, null);
-				case "rsvg-2.40":
-					return  NativeLibrary.Load("rsvg-2", assembly, null);
-			}
-			Console.WriteLine ($"[UNRESOLVE] {assembly} {libraryName}");			
-			return IntPtr.Zero;
-		}
-
-		static Program () {
-			System.Runtime.Loader.AssemblyLoadContext.Default.ResolvingUnmanagedDll+=resolveUnmanaged;
-		}
-#endif			
 		static void Main (string [] args) {
 			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Unorm;
 			Instance.VALIDATION = true;
@@ -41,7 +20,7 @@ namespace VK
 		public Program() : base("VkWindow", 800, 600, false) { }
 
 		protected Random rnd = new Random();
-		protected uint iterations = 200;
+		protected uint iterations = 5000;
 		protected bool paused;
 
 		protected vkvg.Device vkvgDev;

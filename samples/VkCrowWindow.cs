@@ -8,8 +8,38 @@ using Glfw;
 using vke;
 using Vulkan;
 using Crow;
+using Drawing2D;
 
 namespace vke {
+	public class VkTextureBackend : Crow.CairoBackend.ImageBackend {
+		public IntPtr textureDataHandle;
+		public int stride;
+		public VkTextureBackend (IntPtr mappedData, int width, int height, int stride)
+		: base (mappedData, width, height, stride) {
+			this.stride = stride;
+		}
+		public override void ResizeMainSurface(int width, int height)
+		{
+			//surf?.Dispose ();
+			surf = new Crow.CairoBackend.ImageSurface(textureDataHandle, Format.ARGB32, width, height, stride);
+		}
+	}
+	public class VkCrowInterface : Interface {
+		public Image uiImage;
+		public VkCrowInterface (IntPtr glfwWinHandle, Image uiImage) : base ((int)uiImage.Width, (int)uiImage.Height, glfwWinHandle) {
+			this.uiImage = uiImage;
+			backend = new VkTextureBackend (uiImage.MappedData, (int)uiImage.Width,
+				(int)uiImage.Height, (int)uiImage.GetSubresourceLayout ().rowPitch);
+			clipping = Backend.CreateRegion ();
+		}
+		public override void ProcessResize(Rectangle bounds)
+		{
+			VkTextureBackend vkb = backend as VkTextureBackend;
+			vkb.textureDataHandle = uiImage.MappedData;
+			vkb.stride = (int)uiImage.GetSubresourceLayout ().rowPitch;
+			base.ProcessResize(bounds);
+		}
+	}
 	/// <summary>
 	/// Vulkan context with Crow enabled window.
 	/// Crow vector drawing is handled with Cairo Image on an Host mapped vulkan image.
@@ -27,8 +57,7 @@ namespace vke {
 
 		public VkCrowWindow () : base ("VkWindow", 800, 600, false) { }
 
-		public Image uiImage;
-		protected Interface iFace;
+		protected VkCrowInterface iFace;
 		public bool MouseIsInInterface =>
 			iFace.HoverWidget != null;
 		public Device Dev => dev;
@@ -40,10 +69,8 @@ namespace vke {
 		protected override void initVulkan () {
 			base.initVulkan ();
 
-			iFace = new Crow.Interface ((int)Width, (int)Height, WindowHandle);
+			iFace = new VkCrowInterface (WindowHandle, createUITexture ());
 			iFace.Init ();
-
-			initUISurface ();
 		}
 		public override void Update ()
 		{
@@ -74,12 +101,12 @@ namespace vke {
 			base.onChar (cp);
 		}
 		protected override void onKeyUp (Key key, int scanCode, Modifier modifiers) {
-			if (iFace.OnKeyUp (key))
+			if (iFace.OnKeyUp (new KeyEventArgs (key, scanCode, modifiers)))
 				return;
 			base.onKeyUp (key, scanCode, modifiers);
 		}
 		protected override void onKeyDown (Key key, int scanCode, Modifier modifiers) {
-			if (iFace.OnKeyDown (key))
+			if (iFace.OnKeyDown (new KeyEventArgs (key, scanCode, modifiers)))
 				return;
 			base.onKeyDown (key, scanCode, modifiers);
 		}
@@ -88,30 +115,33 @@ namespace vke {
 		{
 			base.OnResize ();
 
-			iFace.ProcessResize (new Crow.Rectangle (0,0,(int)Width, (int)Height));
-			initUISurface ();
+			dev.WaitIdle ();
+			iFace.MainSurface.Dispose();
+			iFace.uiImage.Dispose();
+			iFace.uiImage = createUITexture();
+			dev.WaitIdle ();
+
+			iFace.ProcessResize (new Rectangle (0,0,(int)Width, (int)Height));
 		}
 
 		protected override void Dispose (bool disposing)
 		{
 			dev.WaitIdle ();
-			uiImage?.Dispose ();
+			iFace.uiImage?.Dispose ();
 			iFace.Dispose ();
 			base.Dispose (disposing);
 		}
 
 
-		void initUISurface ()
+		Image createUITexture ()
 		{
-			iFace.surf?.Dispose ();
-			uiImage?.Dispose ();
-
-			uiImage = new Image (dev, VkFormat.B8g8r8a8Unorm, VkImageUsageFlags.Sampled,
+			Image uiImage = new Image (dev, VkFormat.B8g8r8a8Unorm, VkImageUsageFlags.Sampled,
 				VkMemoryPropertyFlags.HostVisible | VkMemoryPropertyFlags.HostCoherent, Width, Height, VkImageType.Image2D,
 				VkSampleCountFlags.SampleCount1, VkImageTiling.Linear);
 			uiImage.CreateView (VkImageViewType.ImageView2D, VkImageAspectFlags.Color);
 			uiImage.CreateSampler (VkFilter.Nearest, VkFilter.Nearest, VkSamplerMipmapMode.Nearest, VkSamplerAddressMode.ClampToBorder);
 			uiImage.Descriptor.imageLayout = VkImageLayout.ShaderReadOnlyOptimal;
+			uiImage.SetName ("uiImage");
 			uiImage.Map ();
 
 			PrimaryCommandBuffer cmd = cmdPool.AllocateAndStart (VkCommandBufferUsageFlags.OneTimeSubmit);
@@ -122,9 +152,7 @@ namespace vke {
 			NotifyValueChanged ("uiImage", uiImage);
 
 			uiImageUpdate?.Write (dev, uiImage.Descriptor);
-
-			iFace.surf = new Crow.Cairo.ImageSurface (uiImage.MappedData, Crow.Cairo.Format.ARGB32,
-				(int)Width, (int)Height, (int)uiImage.GetSubresourceLayout ().rowPitch);
+			return uiImage;
 		}
 
 		protected void loadWindow (string path, object dataSource = null) {

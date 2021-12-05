@@ -15,7 +15,7 @@ EnumSelector {
 	Height="Fit";
 	CornerRadius="5";
 	Foreground="Jet";
-	
+
 }
 DrawModeStyle {
 	Template="#polytest.ui.iconCheckBox.template";

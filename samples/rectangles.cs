@@ -15,6 +15,7 @@ namespace VK
 			using (vkvg.Context ctx = new vkvg.Context(vkvgSurf))
 			{
 				ctx.Clear();
+				Random rnd = new Random();
 
 				for (int i = 0; i < iterations; i++)
 				{

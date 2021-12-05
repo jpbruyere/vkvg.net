@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crow;
+using Drawing2D;
 
 namespace vkvg.Shape
 {
@@ -20,7 +21,7 @@ namespace vkvg.Shape
 				NotifyValueChanged ("Closed", closed);
 			}
 		}
-		public override PointD Center { 
+		public override PointD Center {
 			get {
 				return new PointD ();
 			}
@@ -126,8 +127,10 @@ namespace vkvg.Shape
 			ctx.FillRule = FillRule.EvenOdd;
 			ctx.Save ();
 			ctx.Translate (Translation);
+
 			if (enableDash && dashes.Count > 0)
 				ctx.Dashes = dashes.Select (d => d.Value).ToArray ();
+
 			ctx.LineWidth = lineWidth;
 			ctx.LineJoin = lineJoin;
 			ctx.LineCap = lineCap;
@@ -135,8 +138,7 @@ namespace vkvg.Shape
 			foreach (Command cmd in PathCommands.ToArray ().Reverse ())
 				cmd.Execute (ctx);
 			if (mousePos != null)
-				ctx.LineTo ((vkvg.PointD)mousePos);
-
+				ctx.LineTo ((PointD)mousePos);
 
 			if (fillColor == null) {
 				if (strokeColor == null)
@@ -162,7 +164,7 @@ namespace vkvg.Shape
 			}
 		}
 		public virtual bool IsOver (PointD m, out PathCommand cmd, out int pointIndex) {
-			m -= Translation; 
+			m -= Translation;
 			foreach (PathCommand c in pathCommands.OfType<PathCommand> ()) {
 				if (c.IsOver (m, out pointIndex)) {
 					cmd = c;

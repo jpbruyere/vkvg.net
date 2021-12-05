@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">	
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
-		<Compile Include="$(ProjectName).cs;common.cs" />		
+		<Compile Include="$(ProjectName).cs;common.cs" />
 	</ItemGroup>
 </Project>

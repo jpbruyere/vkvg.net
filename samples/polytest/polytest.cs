@@ -13,6 +13,7 @@ using Glfw;
 using vke;
 using Vulkan;
 using Image = vke.Image;
+using Drawing2D;
 
 namespace VK
 {
@@ -29,29 +30,12 @@ namespace VK
 
 	public class Polytest : VkCrowWindow
 	{
-#if NETCOREAPP		
-		static IntPtr resolveUnmanaged (Assembly assembly, String libraryName) {
-			
-			switch (libraryName)
-			{
-				case "glfw3":
-					return  System.Runtime.InteropServices.NativeLibrary.Load("glfw", assembly, null);
-				case "rsvg-2.40":
-					return  System.Runtime.InteropServices.NativeLibrary.Load("rsvg-2", assembly, null);
-			}
-			Console.WriteLine ($"[UNRESOLVE] {assembly} {libraryName}");			
-			return IntPtr.Zero;
-		}
-
-		static Polytest () {
-			System.Runtime.Loader.AssemblyLoadContext.Default.ResolvingUnmanagedDll+=resolveUnmanaged;
-		}
-#endif		
 		static void Main (string [] args)
 		{
 
 			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Unorm;
 			Instance.VALIDATION = true;
+			//Instance.RENDER_DOC_CAPTURE = true;
 			using (Polytest vke = new Polytest ()) {
 				vke.Run ();
 			}
@@ -76,14 +60,14 @@ namespace VK
 			dslMain = new DescriptorSetLayout (dev,
 				new VkDescriptorSetLayoutBinding (0, VkShaderStageFlags.Fragment, VkDescriptorType.CombinedImageSampler));
 
-			GraphicPipelineConfig cfg = GraphicPipelineConfig.CreateDefault (VkPrimitiveTopology.TriangleList, VkSampleCountFlags.SampleCount1);
-			cfg.RenderPass = new RenderPass (dev, swapChain.ColorFormat, VkSampleCountFlags.SampleCount1);
-			cfg.Layout = new PipelineLayout (dev, dslMain);
-			cfg.blendAttachments [0] = new VkPipelineColorBlendAttachmentState (true);
-			cfg.AddShader (dev, VkShaderStageFlags.Vertex, "#vke.FullScreenQuad.vert.spv");
-			cfg.AddShader (dev, VkShaderStageFlags.Fragment, "#polytest.simpletexture.frag.spv");
-			plMain = new GraphicPipeline (cfg);
-			cfg.DisposeShaders ();
+			using (GraphicPipelineConfig cfg = GraphicPipelineConfig.CreateDefault (VkPrimitiveTopology.TriangleList, VkSampleCountFlags.SampleCount1)) {
+				cfg.RenderPass = new RenderPass (dev, swapChain.ColorFormat, VkSampleCountFlags.SampleCount1);
+				cfg.Layout = new PipelineLayout (dev, dslMain);
+				cfg.blendAttachments [0] = new VkPipelineColorBlendAttachmentState (true);
+				cfg.AddShader (dev, VkShaderStageFlags.Vertex, "#vke.FullScreenQuad.vert.spv");
+				cfg.AddShader (dev, VkShaderStageFlags.Fragment, "#polytest.simpletexture.frag.spv");
+				plMain = new GraphicPipeline (cfg);
+			}
 
 			dsUIimage = dsPool.Allocate (dslMain);
 			dsVKVGimg = dsPool.Allocate (dslMain);
@@ -144,7 +128,7 @@ namespace VK
 		vkvg.Shape.Shape currentShape;
 		vkvg.PathCommand curPathCmd;
 		int curPathCmdPoint;
-		vkvg.PointD? lastMousePos;
+		PointD? lastMousePos;
 
 
 		bool locked = false;
@@ -173,14 +157,14 @@ namespace VK
 				return;
 			}
 
-			vkvg.PointD m = new vkvg.Point ((int)xPos, (int)yPos);
+			PointD m = new Point ((int)xPos, (int)yPos);
 
 			if (locked) {
 				if (currentShape != null) {
 					if (curPathCmd != null) {
 						curPathCmd [curPathCmdPoint] = m - currentShape.Translation;
 					} else if (lastMousePos != null)
-						currentShape.Translation += m - (vkvg.PointD)lastMousePos;
+						currentShape.Translation += m - (PointD)lastMousePos;
 				}
 
 			} else {
@@ -221,9 +205,9 @@ namespace VK
 
 			} else if (currentDrawMode == DrawMode.Lines) {
 				if (currentShape == null)
-					Shapes.Add (CurrentShape = new vkvg.Shape.Path ((vkvg.PointD)lastMousePos));
+					Shapes.Add (CurrentShape = new vkvg.Shape.Path ((PointD)lastMousePos));
 				else
-					CurrentShape.PathCommands.Add (new vkvg.Line () { A = (vkvg.PointD)lastMousePos });
+					CurrentShape.PathCommands.Add (new vkvg.Line () { A = (PointD)lastMousePos });
 			} else if (currentShape == null) {
 				switch (currentDrawMode) {
 				case DrawMode.Rect:
@@ -244,7 +228,7 @@ namespace VK
 			base.onMouseButtonUp(button);
 			if (!(button == Glfw.MouseButton.Left && locked))
 				return;
-				
+
 			if (currentDrawMode != DrawMode.Lines)
 				CurrentDrawMode = DrawMode.Select;
 
@@ -327,7 +311,7 @@ namespace VK
 				ctx.SetSource(1, 1, 1);
 				ctx.Paint();
 
-				
+
 
 				//try {
 				//	vkvg.PathParser pp = new vkvg.PathParser (currentPath);

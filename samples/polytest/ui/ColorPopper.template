@@ -12,4 +12,4 @@
 			<Label Text="{./Caption}"/>
 		</VerticalStack>
 	</Template>
-</CheckBox>			
+</CheckBox>

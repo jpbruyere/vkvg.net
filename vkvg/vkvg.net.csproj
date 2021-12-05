@@ -1,27 +1,32 @@
-<Project Sdk="Microsoft.NET.Sdk">  
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <SolutionDir>$(MSBuildThisFileDirectory)..\</SolutionDir>
-    
-    <AssemblyVersion>0.3.0</AssemblyVersion>
-    <Description>net bindings for vkvg</Description>        
-    <Copyright>Copyright 2018-2019 (c) Jean-Philippe Bruyère. All rights reserved.</Copyright>
-     <!-- Package Info -->    
-    <PackageTags>Vulkan Vector Graphics 3D GPU vkvg Khronos</PackageTags>
+    <TargetFramework>netstandard2.1</TargetFramework>
+		<License>MIT</License>
+		<Authors>Jean-Philippe Bruyère</Authors>
+
+    <AssemblyVersion>0.4.0</AssemblyVersion>
     <PackageVersion>$(AssemblyVersion)-beta</PackageVersion>
+
+    <Description>net bindings for vkvg</Description>
+    <Copyright>Copyright 2018-2019 (c) Jean-Philippe Bruyère. All rights reserved.</Copyright>
+     <!-- Package Info -->
+    <PackageTags>Vulkan Vector Graphics 3D GPU vkvg Khronos</PackageTags>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/jpbruyere/vkvg.net</PackageProjectUrl>        
-    <License>MIT</License>
+    <PackageProjectUrl>https://github.com/jpbruyere/vkvg.net</PackageProjectUrl>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
-    <Authors>Jean-Philippe Bruyère</Authors>
+
 	  <OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
 	  <IntermediateOutputPath>$(SolutionDir)build\obj\$(Configuration)\</IntermediateOutputPath>
-  </PropertyGroup> 
-	
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="src\**\*.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Drawing2D" Version="1.0.0-beta" />
+  </ItemGroup>
+
 </Project>

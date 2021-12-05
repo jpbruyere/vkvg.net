@@ -1,5 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">	
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
-		<Compile Include="$(ProjectName).cs;common.cs" />		
+		<Compile Include="$(ProjectName).cs;common.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="OpenTK.Mathematics" Version="4.6.7" />
 	</ItemGroup>
 </Project>

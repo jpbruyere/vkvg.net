@@ -1,23 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">	
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <Compile Remove="IconWidget.cs" />
   </ItemGroup>
 	<ItemGroup>
-		<Compile Include="$(ProjectName).cs" />		
+		<Compile Include="$(ProjectName).cs" />
 		<Compile Include="..\VkCrowWindow.cs" />
 		<Compile Include="Primitive.cs" />
 		<Compile Include="Shapes.cs" />
 		<Compile Include="..\Extensions.cs" />
 	</ItemGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<DebugType>full</DebugType>
-		<DefineConstants>TRACE;DEBUG</DefineConstants>
-		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-	</PropertyGroup>
+
 	<ItemGroup>
-		<PackageReference Include="Crow" Version="0.9.4-beta" />
-		<PackageReference Include="SpirVTasks" Version="0.1.44" />
+		<PackageReference Include="Crow" Version="0.9.9-beta" />
+		<PackageReference Include="SpirVTasks" Version="0.1.45" />
 		<!--<PackageReference Include="glfw-sharp" Version="0.2.12-beta" />-->
+
 	</ItemGroup>
 	<ItemGroup>
 		<GLSLShader Include="..\shaders\**\*.frag;..\shaders\**\*.vert;..\shaders\**\*.comp;..\shaders\**\*.geom" />

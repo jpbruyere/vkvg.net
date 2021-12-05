@@ -5,23 +5,24 @@ using System;
 using vke;
 using Glfw;
 using Vulkan;
+using Drawing2D;
 
 namespace VK
 {
 	partial class Program : VkWindow
 	{
-		vkvg.Point[] points =  {
-			new vkvg.Point(200,300),//pt1
-			new vkvg.Point(200,50),	//cp1
-			new vkvg.Point(500,300),//cp2
-			new vkvg.Point(500,50),//pt2
+		Point[] points =  {
+			new Point(200,300),//pt1
+			new Point(200,50),	//cp1
+			new Point(500,300),//cp2
+			new Point(500,50),//pt2
 		};
 
 		int curPoint = -1;
 		int cpRadius = 4, selRadius = 4;
 		bool locked = false;
 
-		bool isOver(vkvg.Point p, int x, int y) =>
+		bool isOver(Point p, int x, int y) =>
 			p.X - cpRadius < x && p.X + cpRadius > x && p.Y - cpRadius < y && p.Y + cpRadius > y;
 
 		protected override void onMouseMove(double xPos, double yPos)
@@ -32,7 +33,7 @@ namespace VK
 			{
 				if (curPoint < 0)
 					return;
-				points[curPoint] = new vkvg.Point((int)xPos, (int)yPos);
+				points[curPoint] = new Point((int)xPos, (int)yPos);
 			}
 			else
 			{

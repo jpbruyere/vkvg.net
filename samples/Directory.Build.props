@@ -1,39 +1,31 @@
 ﻿<Project>
 	<PropertyGroup>
-		<SolutionDir>$(MSBuildThisFileDirectory)..\</SolutionDir>
+		<!--<SolutionDir>$(MSBuildThisFileDirectory)..\</SolutionDir>-->
 
 		<TargetFramework>netcoreapp3.1</TargetFramework>
-		<OutputType>Exe</OutputType>        
+		<OutputType>Exe</OutputType>
 
-		<OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
-		<IntermediateOutputPath>$(SolutionDir)build\obj\$(Configuration)\</IntermediateOutputPath>
+		<OutputPath>$(MSBuildThisFileDirectory)..\build\$(Configuration)\</OutputPath>
+		<IntermediateOutputPath>$(MSBuildThisFileDirectory)..\build\obj\$(Configuration)\</IntermediateOutputPath>
 
 		<RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
-		<License>https://opensource.org/licenses/MIT</License>    
+		<License>https://opensource.org/licenses/MIT</License>
 
 		<RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
 		<License>MIT</License>
 		<Authors>Jean-Philippe Bruyère</Authors>
 
 		<LangVersion>7.2</LangVersion>
-		
+
 		<EnableDefaultItems>false</EnableDefaultItems>
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-		
-		
 	</PropertyGroup>
-	
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<DebugType>full</DebugType>
-		<DefineConstants>TRACE;DEBUG</DefineConstants>
-		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-	</PropertyGroup>
-	
+
 	<ItemGroup>
-		<PackageReference Include="vke" Version="0.1.21" />
-		<PackageReference Include="glfw-sharp" Version="0.2.12-beta" />		
+		<PackageReference Include="vke" Version="0.2.2-beta" />
+		<PackageReference Include="glfw-sharp" Version="0.2.14" />
 		<!--<PackageReference Include="DllMapCore" Version="0.1.1" />-->
-		<ProjectReference Include="$(SolutionDir)vkvg\vkvg.net.csproj" />
+		<ProjectReference Include="$(MSBuildThisFileDirectory)..\vkvg\vkvg.net.csproj" />
 	</ItemGroup>
-	
+
 </Project>

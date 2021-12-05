@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using Drawing2D;
 
 namespace vkvg
 {
@@ -51,7 +52,7 @@ namespace vkvg
 
 		public CommandCollection () { }
 		public CommandCollection (params Command[] cmds) {
-			foreach (var cmd in cmds) 
+			foreach (var cmd in cmds)
 				Add (cmd);
 		}
 
@@ -115,7 +116,7 @@ namespace vkvg
 				break;
 			case DrawCommandType.Paint:
 				ctx.Paint ();
-				break;			
+				break;
 			}
 		}
 	}
@@ -167,7 +168,7 @@ namespace vkvg
 	{
 		public override void Execute (Context ctx) {
 			if (relative)
-				ctx.RelMoveTo (A.X, A.Y); 
+				ctx.RelMoveTo (A.X, A.Y);
 			else
 				ctx.MoveTo(A.X,A.Y);
 		}
@@ -225,7 +226,7 @@ namespace vkvg
 						continue;
 					else
 						break;
-				} 
+				}
 				if (c == ',')
 					break;
 				tmp.Append (c);

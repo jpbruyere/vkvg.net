@@ -2,6 +2,8 @@
 //
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 using System;
+using Drawing2D;
+
 namespace Crow
 {
 	public static class Extensions {
@@ -14,6 +16,6 @@ namespace Crow
 		public static void SetAsSource (this SolidColor sc, vkvg.Context ctx, Rectangle bounds = default (Rectangle)) {
 			float[] c = sc.color.floatArray;
 			ctx.SetSource(c [0], c [1], c [2], c [3]);
-		}		
+		}
 	}
 }
