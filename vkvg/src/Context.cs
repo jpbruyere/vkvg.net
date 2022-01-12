@@ -65,13 +65,12 @@ namespace vkvg
 		{
 			set { NativeMethods.vkvg_select_font_face(handle, value); }
 		}
-		public FontExtents FontExtents
+		public Drawing2D.FontExtents FontExtents
 		{
 			get
 			{
-				FontExtents f_extents;
-				NativeMethods.vkvg_font_extents(handle, out f_extents);
-				return f_extents;
+				NativeMethods.vkvg_font_extents(handle, out vkvg.FontExtents e);
+				return new Drawing2D.FontExtents (e.Ascent, e.Descent, e.Height, e.MaxXAdvance, e.MaxYAdvance);
 			}
 		}
 		public void SetFontSize (double size) => NativeMethods.vkvg_set_font_size(handle, (uint)size);
