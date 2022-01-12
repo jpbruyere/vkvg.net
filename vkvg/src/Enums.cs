@@ -6,30 +6,6 @@ using System;
 
 namespace vkvg
 {
-    public enum Status
-    {
-        Success = 0,
-        NoMemory,
-        InvalidRestore,
-        InvalidPopGroup,
-        NoCurrentPoint,
-        InvalidMatrix,
-        InvalidStatus,
-        NullPointer,
-        InvalidString,
-        InvalidPathData,
-        ReadError,
-        WriteError,
-        SurfaceFinished,
-        SurfaceTypeMismatch,
-        PatternTypeMismatch,
-        InvalidContent,
-        InvalidFormat,
-        InvalidVisual,
-        FileNotFound,
-        InvalidDash
-    }
-
     public enum Direction
     {
         Horizontal = 0,
@@ -44,26 +20,5 @@ namespace vkvg
         A1
     }
 
-    public enum FontSlant
-    {
-        Normal,
-        Italic,
-        Oblique
-    }
-    public enum FontWeight
-    {
-        Normal,
-        Bold,
-    }
 
-    public enum SampleCount
-    {
-        Sample_1 = 0x00000001,
-        Sample_2 = 0x00000002,
-        Sample_4 = 0x00000004,
-        Sample_8 = 0x00000008,
-        Sample_16 = 0x00000010,
-        Sample_32 = 0x00000020,
-        Sample_64 = 0x00000040
-    }
 }

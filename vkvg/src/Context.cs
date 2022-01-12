@@ -3,6 +3,7 @@
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Linq;
 using System.Text;
 using Drawing2D;
 
@@ -73,15 +74,8 @@ namespace vkvg
 				return f_extents;
 			}
 		}
-		public TextExtents TextExtents(string s)
-		{
-			TextExtents extents = default(TextExtents);
-			if (!string.IsNullOrEmpty(s))
-				NativeMethods.vkvg_text_extents(handle, TerminateUtf8(s), out extents);
-			return extents;
-		}
 		public void SetFontSize (double size) => NativeMethods.vkvg_set_font_size(handle, (uint)size);
-		public void ShowText(string txt) => NativeMethods.vkvg_show_text(handle, TerminateUtf8(txt));
+		public void ShowText(string txt) => ShowText(txt.AsSpan());
 		public void ShowText(TextRun textRun) => NativeMethods.vkvg_show_text_run(handle, textRun.Handle);
 		public Matrix Matrix
 		{
@@ -205,14 +199,6 @@ namespace vkvg
 		public Recording StopRecording () => new Recording (NativeMethods.vkvg_stop_recording(handle));
 		public void Replay (Recording rec) => NativeMethods.vkvg_replay (handle, rec.Handle);
 		public void Replay (Recording rec, UInt32 commandIndex) => NativeMethods.vkvg_replay_command (handle, rec.Handle, commandIndex);
-		internal static byte[] TerminateUtf8(string s)
-		{
-			// compute the byte count including the trailing \0
-			var byteCount = Encoding.UTF8.GetMaxByteCount(s.Length + 1);
-			var bytes = new byte[byteCount];
-			Encoding.UTF8.GetBytes(s, 0, s.Length, bytes, 0);
-			return bytes;
-		}
 
 		public float[] Dashes {
 			set {
@@ -221,6 +207,63 @@ namespace vkvg
 				else
 					NativeMethods.vkvg_set_dash (handle, value, (uint)value.Length, 0);
 			}
+		}
+		public void SelectFontFace(string family, FontSlant slant, FontWeight weight)
+		{
+			NativeMethods.vkvg_select_font_face (handle, family);
+		}
+		internal static byte[] TerminateUtf8(string s)
+		{
+			// compute the byte count including the trailing \0
+			var byteCount = Encoding.UTF8.GetMaxByteCount(s.Length + 1);
+			var bytes = new byte[byteCount];
+			Encoding.UTF8.GetBytes(s, 0, s.Length, bytes, 0);
+			return bytes;
+		}
+		public void SetDash (double [] dashes, double offset = 0) {
+			if (dashes == null)
+				NativeMethods.vkvg_set_dash(handle, null, 0, 0);
+			else {
+				float[] floats = dashes.Cast<float> ().ToArray ();
+				NativeMethods.vkvg_set_dash(handle, floats, (uint)dashes.Length, (float)offset);
+			}
+		}
+
+		public Drawing2D.TextExtents TextExtents (ReadOnlySpan<char> s, int tabSize = 4) {
+			TextExtents (s, tabSize, out Drawing2D.TextExtents e);
+			return e;
+		}
+		public void TextExtents (ReadOnlySpan<char> s, int tabSize, out Drawing2D.TextExtents extents) {
+			if (s.Length == 0) {
+				extents = default;
+				return;
+			}
+			int size = s.Length * 4 + 1;
+			Span<byte> bytes = size > 512 ? new byte[size] : stackalloc byte[size];
+			int encodedBytes = s.ToUtf8 (bytes, tabSize);
+			bytes[encodedBytes] = 0;
+			TextExtents (bytes.Slice (0, encodedBytes + 1), out extents);
+		}
+		public void TextExtents (Span<byte> bytes, out Drawing2D.TextExtents extents) {
+			NativeMethods.vkvg_text_extents (handle, ref bytes.GetPinnableReference (), out TextExtents e);
+			extents = new Drawing2D.TextExtents (e.XBearing, e.YBearing, e.Width, e.Height, e.XAdvance, e.YAdvance);
+		}
+		public void ShowText (ReadOnlySpan<char> s, int tabSize = 4) {
+			int size = s.Length * 4 + 1;
+			Span<byte> bytes = size > 512 ? new byte[size] : stackalloc byte[size];
+			int encodedBytes = s.ToUtf8 (bytes, tabSize);
+			bytes[encodedBytes] = 0;
+			ShowText (bytes.Slice (0, encodedBytes + 1));
+		}
+		public void ShowText (Span<byte> bytes) {
+			NativeMethods.vkvg_show_text (handle, ref bytes.GetPinnableReference());
+		}
+
+
+		public void PaintWithAlpha(double alpha) => Paint();
+		public Rectangle StrokeExtents()
+		{
+			throw new NotImplementedException();
 		}
 
 
@@ -238,51 +281,6 @@ namespace vkvg
 
 			NativeMethods.vkvg_destroy(handle);
 			handle = IntPtr.Zero;
-		}
-
-		public void SelectFontFace(string family, Drawing2D.FontSlant slant, Drawing2D.FontWeight weight)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void SetDash(double[] dashes, double offset = 0)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Drawing2D.TextExtents TextExtents(ReadOnlySpan<char> s, int tabSize = 4)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void TextExtents(ReadOnlySpan<char> s, int tabSize, out Drawing2D.TextExtents extents)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void TextExtents(Span<byte> bytes, out Drawing2D.TextExtents extents)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void ShowText(ReadOnlySpan<char> s, int tabSize = 4)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void ShowText(Span<byte> bytes)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void PaintWithAlpha(double alpha)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Rectangle StrokeExtents()
-		{
-			throw new NotImplementedException();
 		}
 		#endregion
 	}

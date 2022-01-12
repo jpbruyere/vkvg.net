@@ -85,7 +85,7 @@ namespace VK
 
 			init_main_pipeline ();
 
-			vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex, vkvg.SampleCount.Sample_8);
+			vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex, Drawing2D.SampleCount.Sample_8);
 			UpdateFrequency = 10;//update on each frame to have effective drawing perfs
 
 			loadWindow ("#polytest.ui.main.crow", this);

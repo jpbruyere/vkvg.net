@@ -67,7 +67,7 @@ namespace VK
 
 		protected override void initVulkan () {
 			base.initVulkan ();
-			vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex, vkvg.SampleCount.Sample_1);
+			vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex, Drawing2D.SampleCount.Sample_1);
 			UpdateFrequency = 0;//update on each frame to have effective drawing perfs
 		}
 
