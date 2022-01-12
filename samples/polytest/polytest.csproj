@@ -1,20 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <Compile Remove="IconWidget.cs" />
-  </ItemGroup>
+	<PropertyGroup>
+		<EnableDefaultItems>false</EnableDefaultItems>
+	</PropertyGroup>
 	<ItemGroup>
-		<Compile Include="$(ProjectName).cs" />
-		<Compile Include="..\VkCrowWindow.cs" />
-		<Compile Include="Primitive.cs" />
-		<Compile Include="Shapes.cs" />
-		<Compile Include="..\Extensions.cs" />
+		<Compile Remove="$(SampleCommonDir)common.cs"/>
+		<Compile Include="src\*.cs"/>
+		<Compile Include="$(SampleCommonDir)VkCrowWindow.cs;$(SampleCommonDir)Extensions.cs"/>
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Crow" Version="0.9.9-beta" />
 		<PackageReference Include="SpirVTasks" Version="0.1.45" />
-		<!--<PackageReference Include="glfw-sharp" Version="0.2.12-beta" />-->
-
 	</ItemGroup>
 	<ItemGroup>
 		<GLSLShader Include="..\shaders\**\*.frag;..\shaders\**\*.vert;..\shaders\**\*.comp;..\shaders\**\*.geom" />

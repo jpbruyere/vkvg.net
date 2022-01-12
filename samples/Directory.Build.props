@@ -1,12 +1,9 @@
 ﻿<Project>
 	<PropertyGroup>
-		<!--<SolutionDir>$(MSBuildThisFileDirectory)..\</SolutionDir>-->
-
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<OutputType>Exe</OutputType>
 
 		<OutputPath>$(MSBuildThisFileDirectory)..\build\$(Configuration)\</OutputPath>
-		<IntermediateOutputPath>$(MSBuildThisFileDirectory)..\build\obj\$(Configuration)\</IntermediateOutputPath>
 
 		<RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
 		<License>https://opensource.org/licenses/MIT</License>
@@ -15,17 +12,20 @@
 		<License>MIT</License>
 		<Authors>Jean-Philippe Bruyère</Authors>
 
-		<LangVersion>7.2</LangVersion>
 
-		<EnableDefaultItems>false</EnableDefaultItems>
-		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<SampleDir>$(MSBuildThisFileDirectory)</SampleDir>
+		<SampleCommonDir>$(MSBuildThisFileDirectory)common\</SampleCommonDir>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="vke" Version="0.2.2-beta" />
 		<PackageReference Include="glfw-sharp" Version="0.2.14" />
 		<!--<PackageReference Include="DllMapCore" Version="0.1.1" />-->
-		<ProjectReference Include="$(MSBuildThisFileDirectory)..\vkvg\vkvg.net.csproj" />
+		<ProjectReference Include="$(SampleDir)..\vkvg.net\vkvg.net.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="$(SampleCommonDir)common.cs" />
 	</ItemGroup>
 
 </Project>

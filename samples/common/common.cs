@@ -11,7 +11,7 @@ namespace VK
 	public partial class Program : VkWindow
 	{
 		static void Main (string [] args) {
-			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Unorm;
+			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Srgb;
 			Instance.VALIDATION = true;
 			using (Program vke = new Program ()) {
 				vke.Run ();
@@ -20,7 +20,7 @@ namespace VK
 		public Program() : base("VkWindow", 800, 600, false) { }
 
 		protected Random rnd = new Random();
-		protected uint iterations = 5000;
+		protected uint iterations = 500;
 		protected bool paused;
 
 		protected vkvg.Device vkvgDev;

@@ -17,8 +17,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/jpbruyere/vkvg.net</RepositoryUrl>
 
-	  <OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
-	  <IntermediateOutputPath>$(SolutionDir)build\obj\$(Configuration)\</IntermediateOutputPath>
+		<OutputPath>$(MSBuildThisFileDirectory)..\build\$(Configuration)\</OutputPath>
+
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
 
