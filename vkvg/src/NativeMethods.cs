@@ -263,17 +263,19 @@ namespace vkvg
 		internal static extern void vkvg_surface_write_to_memory(IntPtr surf, IntPtr pBitmap);
 		#endregion
 
-		#region NSVG
+		#region vkvg-svg
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern IntPtr nsvg_load_file(IntPtr dev, string filePath);
+		internal static extern IntPtr vkvg_svg_load (string filePath);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern IntPtr nsvg_load(IntPtr dev, byte[] fragment);
+		internal static extern IntPtr vkvg_svg_load_fragment (ref byte fragment);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern void nsvg_destroy(IntPtr nsvgImage);
+		internal static extern void vkvg_svg_destroy(IntPtr svg);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern void nsvg_get_size(IntPtr nsvgImage, out int width, out int height);
+		internal static extern void vkvg_svg_get_dimensions(IntPtr svg, out uint width, out uint height);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern void vkvg_render_svg(IntPtr ctx, IntPtr nsvgImage, string subId);
+		internal static extern void vkvg_svg_render (IntPtr svg, IntPtr ctx, string subId);
+		#endregion
+
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void vkvg_start_recording(IntPtr ctx);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
@@ -290,7 +292,6 @@ namespace vkvg
 		internal static extern void vkvg_replay_command(IntPtr ctx, IntPtr rec, UInt32 cmdIndex);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void vkvg_recording_get_command (IntPtr rec, UInt32 cmdIndex, out UInt32 cmd, out IntPtr dataOffset);
-		#endregion
 	}
 }
 

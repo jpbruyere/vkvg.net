@@ -144,8 +144,10 @@ namespace vkvg
 			=> NativeMethods.vkvg_set_source_surface(handle, (surf as Surface).Handle, (float)x, (float)y);
 		public void SetSource(double r, double g, double b, double a = 1.0)
 			=> NativeMethods.vkvg_set_source_rgba(handle, (float)r, (float)g, (float)b, (float)a);
-		public void RenderSvg(ISvgHandle nsvgImage, string subId = null)
-			=> nsvgImage.Render (this, subId);
+		public void RenderSvg(ISvgHandle svg, string subId = null) {
+			if (svg is SvgHandle sh)
+				sh.Render (this, subId);
+		}
 		Matrix savedMat = Matrix.Identity;
 		public void SaveTransformations() => NativeMethods.vkvg_get_matrix (handle, out savedMat);
 		public void RestoreTransformations() => NativeMethods.vkvg_set_matrix (handle, ref savedMat);
@@ -190,10 +192,6 @@ namespace vkvg
 		public void SetSource(float r, float g, float b, float a = 1f) => NativeMethods.vkvg_set_source_rgba(handle, r, g, b, a);
 		public void SetSource(Surface surf, float x = 0f, float y = 0f) => NativeMethods.vkvg_set_source_surface(handle, surf.Handle, x, y);
 		public void SetSourceSurface(Surface surf, float x = 0f, float y = 0f) => NativeMethods.vkvg_set_source_surface(handle, surf.Handle, x, y);
-		public void RenderSvg(IntPtr nsvgImage, string subId = null)
-		{
-			NativeMethods.vkvg_render_svg(handle, nsvgImage, subId);
-		}
 		public void StartRecording () => NativeMethods.vkvg_start_recording(handle);
 		public Recording StopRecording () => new Recording (NativeMethods.vkvg_stop_recording(handle));
 		public void Replay (Recording rec) => NativeMethods.vkvg_replay (handle, rec.Handle);
