@@ -1,5 +1,6 @@
 ﻿using System;
 using vke;
+using Drawing2D;
 
 namespace VK
 {
@@ -29,18 +30,18 @@ namespace VK
 			ctx.Restore();
 
 			ctx.Rectangle(step + 50, step + 1, 100, 12);
-			ctx.Operator = vkvg.Operator.Clear;
+			ctx.Operator = Operator.Clear;
 			ctx.Fill();
-			ctx.Operator = vkvg.Operator.Over;
+			ctx.Operator = Operator.Over;
 			ctx.SetSource(1.0, 0.0, 0.0);
 			ctx.MoveTo(step + 30, step + 12);
 			ctx.ShowText($"fps: {fps}");
 
 
-			ctx.Operator = vkvg.Operator.Clear;
+			ctx.Operator = Operator.Clear;
 			ctx.Rectangle(step, step, 20, 20);
 			ctx.Fill();
-			ctx.Operator = vkvg.Operator.Over;
+			ctx.Operator = Operator.Over;
 
 			ctx.SetSource(1f / step, 0f, 0f);
 			ctx.Rectangle(step + 2, step + 2, 16, 16);

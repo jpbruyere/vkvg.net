@@ -4,11 +4,11 @@
 		<License>MIT</License>
 		<Authors>Jean-Philippe Bruyère</Authors>
 
-    <AssemblyVersion>0.4.0</AssemblyVersion>
+    <AssemblyVersion>0.5.0</AssemblyVersion>
     <PackageVersion>$(AssemblyVersion)-beta</PackageVersion>
 
     <Description>net bindings for vkvg</Description>
-    <Copyright>Copyright 2018-2019 (c) Jean-Philippe Bruyère. All rights reserved.</Copyright>
+    <Copyright>Copyright 2018-2022 (c) Jean-Philippe Bruyère. All rights reserved.</Copyright>
      <!-- Package Info -->
     <PackageTags>Vulkan Vector Graphics 3D GPU vkvg Khronos</PackageTags>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
