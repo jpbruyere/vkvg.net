@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2018-2020  Jean-Philippe Bruyère <jp_bruyere@hotmail.com>
+﻿// Copyright (c) 2018-2022  Jean-Philippe Bruyère <jp_bruyere@hotmail.com>
 //
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Runtime.InteropServices;
+using Drawing2D;
 
 namespace vkvg
 {
@@ -146,8 +147,9 @@ namespace vkvg
 
 		//void vkvg_set_dash (VkvgContext ctx, const float* dashes, uint32_t num_dashes, float offset);
 		//void vkvg_get_dash (VkvgContext ctx, const float* dashes, uint32_t* num_dashes, float* offset
-
-	   [DllImport (libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern Status vkvg_status(IntPtr ctx);
+		[DllImport (libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern IntPtr vkvg_reference(IntPtr ctx);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern uint vkvg_get_reference_count(IntPtr ctx);
@@ -236,11 +238,11 @@ namespace vkvg
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern IntPtr vkvg_surface_create_from_image(IntPtr dev, string filePath);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern IntPtr vkvg_surface_create_from_svg(IntPtr dev, string filePath);
+		internal static extern IntPtr vkvg_surface_create_from_svg(IntPtr dev, UInt32 width, UInt32 height, string filePath);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern IntPtr vkvg_surface_create_from_svg_fragment(IntPtr dev, byte[] filePath);
+		internal static extern IntPtr vkvg_surface_create_from_svg_fragment(IntPtr dev, UInt32 width, UInt32 height, byte[] filePath);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern IntPtr vkvg_surface_create_from_bitmap(IntPtr dev, ref byte[] data, uint width, uint height);
+		internal static extern IntPtr vkvg_surface_create_from_bitmap(IntPtr dev, ref byte data, uint width, uint height);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void vkvg_surface_destroy(IntPtr surf);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
@@ -257,6 +259,8 @@ namespace vkvg
 		internal static extern uint vkvg_surface_get_reference_count(IntPtr surf);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void vkvg_surface_write_to_png(IntPtr surf, [MarshalAs(UnmanagedType.LPStr)]string path);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern void vkvg_surface_write_to_memory(IntPtr surf, IntPtr pBitmap);
 		#endregion
 
 		#region NSVG
@@ -270,6 +274,22 @@ namespace vkvg
 		internal static extern void nsvg_get_size(IntPtr nsvgImage, out int width, out int height);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void vkvg_render_svg(IntPtr ctx, IntPtr nsvgImage, string subId);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern void vkvg_start_recording(IntPtr ctx);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern IntPtr vkvg_stop_recording(IntPtr ctx);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern void vkvg_recording_destroy(IntPtr rec);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern UInt32 vkvg_recording_get_count(IntPtr rec);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern IntPtr vkvg_recording_get_data (IntPtr rec);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern void vkvg_replay(IntPtr ctx, IntPtr rec);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern void vkvg_replay_command(IntPtr ctx, IntPtr rec, UInt32 cmdIndex);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern void vkvg_recording_get_command (IntPtr rec, UInt32 cmdIndex, out UInt32 cmd, out IntPtr dataOffset);
 		#endregion
 	}
 }

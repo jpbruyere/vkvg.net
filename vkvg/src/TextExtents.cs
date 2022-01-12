@@ -8,65 +8,53 @@ using System.Runtime.InteropServices;
 namespace vkvg
 {
 	[StructLayout (LayoutKind.Sequential)]
-	public struct TextExtents
+	public struct TextExtents : IEquatable<TextExtents>
 	{
-		float xbearing;
-		float ybearing;
+		float xBearing;
+		float yBearing;
 		float width;
 		float height;
-		float xadvance;
-		float yadvance;
-		
+		float xAdvance;
+		float yAdvance;
+
 		public float XBearing {
-			get { return xbearing; }
-			set { xbearing = value; }
+			get => xBearing;
+			set { xBearing = value; }
 		}
-		
+
 		public float YBearing {
-			get { return ybearing; }
-			set { ybearing = value; }
+			get => yBearing;
+			set { yBearing = value; }
 		}
-		
+
 		public float Width {
-			get { return width; }
+			get => width;
 			set { width = value; }
 		}
-		
+
 		public float Height {
-			get { return height; }
+			get => height;
 			set { height = value; }
 		}
-		
+
 		public float XAdvance {
-			get { return xadvance; }
-			set { xadvance = value; }
+			get => xAdvance;
+			set { xAdvance = value; }
 		}
-		
+
 		public float YAdvance {
-			get { return yadvance; }
-			set { yadvance = value; }
+			get => yAdvance;
+			set { yAdvance = value; }
 		}
 
-		public override bool Equals (object obj)
-		{
-			if (obj is TextExtents)
-				return this == (TextExtents)obj;
-			return false;
-		}
+		public override int GetHashCode () =>
+			HashCode.Combine (xBearing, yBearing, width, height, xAdvance, yAdvance);
+		public override bool Equals (object obj) => obj is TextExtents te ? Equals (te) : false;
 
-		public override int GetHashCode ()
-		{
-			return (int)XBearing ^ (int)YBearing ^ (int)Width ^ (int)Height ^ (int)XAdvance ^ (int)YAdvance;
-		}
-
-		public static bool operator == (TextExtents extents, TextExtents other)
-		{
-			return extents.XBearing == other.XBearing && extents.YBearing == other.YBearing && extents.Width == other.Width && extents.Height == other.Height && extents.XAdvance == other.XAdvance && extents.YAdvance == other.YAdvance;
-		}
-
-		public static bool operator != (TextExtents extents, TextExtents other)
-		{
-			return !(extents == other);
-		}
+		public bool Equals(TextExtents other) =>
+			xBearing == other.xBearing && yBearing == other.yBearing && width == other.width && height == other.height &&
+			xAdvance == other.xAdvance && yAdvance == other.yAdvance;
+		public static bool operator == (TextExtents extents, TextExtents other) => extents.Equals (other);
+		public static bool operator != (TextExtents extents, TextExtents other )=> !extents.Equals (other);
 	}
 }

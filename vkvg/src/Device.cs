@@ -3,10 +3,11 @@
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 
 using System;
+using Drawing2D;
 
 namespace vkvg
 {
-	public class Device: IDisposable
+	public class Device : IDevice
 	{
 
 		IntPtr handle = IntPtr.Zero;
@@ -22,18 +23,14 @@ namespace vkvg
 		}
 		#endregion
 
-		public void GetDpy (out int hdpy, out int vdpy) {
-			NativeMethods.vkvg_device_get_dpy (handle, out hdpy, out vdpy);
-		}
-		public void SetDpy (int hdpy, int vdpy) {
-			NativeMethods.vkvg_device_set_dpy (handle, hdpy, vdpy);
-		}
-		public void AddReference () {
-			NativeMethods.vkvg_device_reference (handle);
-		}
+		public IntPtr Handle => handle;
+		public void AddReference () => NativeMethods.vkvg_device_reference (handle);
 		public uint References () => NativeMethods.vkvg_device_get_reference_count (handle);
 
-		public IntPtr Handle { get { return handle; }}
+		#region IDevice implementation
+		public void GetDpy (out int hdpy, out int vdpy) => NativeMethods.vkvg_device_get_dpy (handle, out hdpy, out vdpy);
+		public void SetDpy (int hdpy, int vdpy) => NativeMethods.vkvg_device_set_dpy (handle, hdpy, vdpy);
+		#endregion
 
 		#region IDisposable implementation
 		public void Dispose ()

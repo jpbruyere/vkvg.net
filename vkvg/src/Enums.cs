@@ -44,54 +44,6 @@ namespace vkvg
         A1
     }
 
-    public enum Extend
-    {
-        None,
-        Repeat,
-        Reflect,
-        Pad
-    }
-
-    public enum Filter
-    {
-        Fast,
-        Good,
-        Best,
-        Nearest,
-        Bilinear,
-        Gaussian,
-    }
-
-    public enum PatternType
-    {
-        Solid,
-        Surface,
-        Linear,
-        Radial,
-        Mesh,
-        RasterSource,
-    }
-
-    public enum Operator
-    {
-        Clear,
-        Source,
-        Over,
-        In,
-        Out,
-        Atop,
-
-        Dest,
-        DestOver,
-        DestIn,
-        DestOut,
-        DestAtop,
-
-        Xor,
-        Add,
-        Saturate,
-    }
-
     public enum FontSlant
     {
         Normal,
@@ -114,30 +66,4 @@ namespace vkvg
         Sample_32 = 0x00000020,
         Sample_64 = 0x00000040
     }
-
-    public enum LineCap
-    {
-        Butt,
-        Round,
-        Square
-    }
-
-    public enum LineJoin
-    {
-        Miter,
-        Round,
-        Bevel
-    }
-    public enum FillRule
-    {
-        EvenOdd,
-        NonZero,
-    }
-	public enum Antialias
-	{
-		Default,
-		None,
-		Grey,
-		Subpixel,
-	}
 }
