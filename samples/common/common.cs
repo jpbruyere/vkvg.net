@@ -5,14 +5,16 @@ using System;
 using vke;
 using Glfw;
 using Vulkan;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace VK
 {
 	public partial class Program : VkWindow
 	{
 		static void Main (string [] args) {
-			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Srgb;
-			Instance.VALIDATION = true;
+			SwapChain.PREFERED_FORMAT = VkFormat.B8g8r8a8Srgb;			
 			using (Program vke = new Program ()) {
 				vke.Run ();
 			}
@@ -25,10 +27,32 @@ namespace VK
 
 		protected vkvg.Device vkvgDev;
 		protected vkvg.Surface vkvgSurf;
+		
 
-		public override string [] EnabledInstanceExtensions =>
-			new string [] { Ext.I.VK_EXT_debug_utils };
-
+		public override string [] EnabledInstanceExtensions {
+			get {
+				//return new string [] { Ext.I.VK_EXT_debug_utils };
+				List<string> tmp = new List<string>(vkvg.Device.GetRequiredInstanceExtensions ());
+				tmp.Add(Ext.I.VK_EXT_debug_utils);
+				return tmp.ToArray();
+			}			
+		}
+		public override string[] EnabledDeviceExtensions {
+			get {				
+				List<string> tmp = new List<string>(vkvg.Device.GetRequiredDeviceExtensions (phy.Handle));
+				tmp.AddRange(base.EnabledDeviceExtensions);
+				return tmp.ToArray();
+			}			
+		}
+		IntPtr pNext = IntPtr.Zero;
+		public override IntPtr DeviceCreationPNext => pNext;
+		protected override void configureEnabledFeatures(VkPhysicalDeviceFeatures available_features, ref VkPhysicalDeviceFeatures enabled_features)
+		{
+			GCHandle hnd = GCHandle.Alloc (enabled_features, GCHandleType.Pinned);
+			//pNext = vkvg.Device.GetDeviceRequirements (hnd.AddrOfPinnedObject());
+			base.configureEnabledFeatures(available_features, ref enabled_features);
+			hnd.Free();
+		}
 		protected override void initVulkan () {
 			base.initVulkan ();
 			vkvgDev = new vkvg.Device (instance.Handle, phy.Handle, dev.VkDev.Handle, presentQueue.qFamIndex, Drawing2D.SampleCount.Sample_8);
@@ -65,10 +89,10 @@ namespace VK
 				cmds[i] = cmdPool.AllocateCommandBuffer();
 				cmds[i].Start();
 
-				Utils.setImageLayout(cmds[i].Handle, swapChain.images[i].Handle, VkImageAspectFlags.Color,
+				Helpers.setImageLayout(cmds[i].Handle, swapChain.images[i].Handle, VkImageAspectFlags.Color,
 					VkImageLayout.Undefined, VkImageLayout.TransferDstOptimal,
 					VkPipelineStageFlags.BottomOfPipe, VkPipelineStageFlags.Transfer);
-				Utils.setImageLayout(cmds[i].Handle, srcImg, VkImageAspectFlags.Color,
+				Helpers.setImageLayout(cmds[i].Handle, srcImg, VkImageAspectFlags.Color,
 					VkImageLayout.ColorAttachmentOptimal, VkImageLayout.TransferSrcOptimal,
 					VkPipelineStageFlags.ColorAttachmentOutput, VkPipelineStageFlags.Transfer);
 
@@ -90,10 +114,10 @@ namespace VK
 				Vk.vkCmdCopyImage(cmds[i].Handle, srcImg, VkImageLayout.TransferSrcOptimal,
 					swapChain.images[i].Handle, VkImageLayout.TransferDstOptimal, 1, ref cregion);
 
-				Utils.setImageLayout(cmds[i].Handle, swapChain.images[i].Handle, VkImageAspectFlags.Color,
+				Helpers.setImageLayout(cmds[i].Handle, swapChain.images[i].Handle, VkImageAspectFlags.Color,
 					VkImageLayout.TransferDstOptimal, VkImageLayout.PresentSrcKHR,
 					VkPipelineStageFlags.Transfer, VkPipelineStageFlags.BottomOfPipe);
-				Utils.setImageLayout(cmds[i].Handle, srcImg, VkImageAspectFlags.Color,
+				Helpers.setImageLayout(cmds[i].Handle, srcImg, VkImageAspectFlags.Color,
 					VkImageLayout.TransferSrcOptimal, VkImageLayout.ColorAttachmentOptimal,
 					VkPipelineStageFlags.Transfer, VkPipelineStageFlags.ColorAttachmentOutput);
 

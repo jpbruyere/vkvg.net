@@ -18,7 +18,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="vke" Version="0.2.2-beta" />
+		<PackageReference Include="vke" Version="0.2.6-beta" />
 		<PackageReference Include="glfw-sharp" Version="0.2.14" />
 		<!--<PackageReference Include="DllMapCore" Version="0.1.1" />-->
 		<ProjectReference Include="$(SampleDir)..\vkvg.net\vkvg.net.csproj" />

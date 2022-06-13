@@ -187,8 +187,8 @@ namespace VK
 			lastMousePos = m;
 		}
 
-		protected override void onMouseButtonDown (MouseButton button) {
-			base.onMouseButtonDown (button);
+		protected override void onMouseButtonDown (MouseButton button, Modifier mods) {
+			base.onMouseButtonDown (button, mods);
 
 			if (MouseIsInInterface || lastMousePos == null)
 				return;
@@ -223,9 +223,9 @@ namespace VK
 			}
 			locked = true;
 		}
-		protected override void onMouseButtonUp(MouseButton button)
+		protected override void onMouseButtonUp(MouseButton button, Modifier mods)
 		{
-			base.onMouseButtonUp(button);
+			base.onMouseButtonUp(button, mods);
 			if (!(button == Glfw.MouseButton.Left && locked))
 				return;
 

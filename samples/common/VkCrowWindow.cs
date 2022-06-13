@@ -84,16 +84,16 @@ namespace vke {
 				return;
 			base.onMouseMove (xPos, yPos);
 		}
-		protected override void onMouseButtonDown (MouseButton button) {
+		protected override void onMouseButtonDown (MouseButton button, Modifier mods) {
 			if (iFace.OnMouseButtonDown (button))
 				return;
-			base.onMouseButtonDown (button);
+			base.onMouseButtonDown (button, mods);
 		}
-		protected override void onMouseButtonUp (MouseButton button)
+		protected override void onMouseButtonUp (MouseButton button, Modifier mods)
 		{
 			if (iFace.OnMouseButtonUp (button))
 				return;
-			base.onMouseButtonUp (button);
+			base.onMouseButtonUp (button, mods);
 		}
 		protected override void onChar (CodePoint cp) {
 			if (iFace.OnKeyPress (cp.ToChar()))

@@ -47,14 +47,14 @@ namespace VK
 				}
 			}
 		}
-		protected override void onMouseButtonDown(MouseButton button)
+		protected override void onMouseButtonDown(MouseButton button, Modifier mods)
 		{
-			base.onMouseButtonDown(button);
+			base.onMouseButtonDown(button, mods);
 			locked |= button == Glfw.MouseButton.Left;
 		}
-		protected override void onMouseButtonUp(MouseButton button)
+		protected override void onMouseButtonUp(MouseButton button, Modifier mods)
 		{
-			base.onMouseButtonUp(button);
+			base.onMouseButtonUp(button, mods);
 			locked &= button != Glfw.MouseButton.Left;
 		}
 

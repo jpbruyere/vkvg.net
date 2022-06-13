@@ -29,6 +29,12 @@ namespace vkvg
 		internal static extern void vkvg_device_set_dpy(IntPtr dev, int hdpy, int vdpy);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void vkvg_device_get_dpy(IntPtr dev, out int hdpy, out int vdpy);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern Status vkvg_get_required_instance_extensions(IntPtr exts, out UInt32 count);		
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern Status vkvg_get_required_device_extensions(IntPtr phy, IntPtr exts, out UInt32 count);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern IntPtr vkvg_get_device_requirements (IntPtr pEnabledFeatures);
 		#endregion
 
 		#region Context

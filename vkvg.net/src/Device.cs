@@ -3,6 +3,8 @@
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Drawing2D;
 
 namespace vkvg
@@ -32,6 +34,37 @@ namespace vkvg
 		public void SetDpy (int hdpy, int vdpy) => NativeMethods.vkvg_device_set_dpy (handle, hdpy, vdpy);
 		#endregion
 
+		public static IEnumerable<string> GetRequiredInstanceExtensions () {
+			NativeMethods.vkvg_get_required_instance_extensions(IntPtr.Zero, out uint count);
+			IntPtr ptrSupExts = Marshal.AllocHGlobal (IntPtr.Size * (int)count);
+			NativeMethods.vkvg_get_required_instance_extensions(ptrSupExts, out count);
+			
+			IntPtr tmp = ptrSupExts;
+			for (int i = 0; i < count; i++) {
+				IntPtr strPtr = Marshal.ReadIntPtr (tmp);
+				yield return Marshal.PtrToStringAnsi (strPtr);
+				tmp += IntPtr.Size;
+			}
+			Marshal.FreeHGlobal(ptrSupExts);
+		}
+		public static IEnumerable<string> GetRequiredDeviceExtensions (IntPtr phy) {
+			NativeMethods.vkvg_get_required_device_extensions(phy, IntPtr.Zero, out uint count);
+			IntPtr ptrSupExts = Marshal.AllocHGlobal (IntPtr.Size * (int)count);
+			NativeMethods.vkvg_get_required_device_extensions(phy, ptrSupExts, out count);
+			
+			IntPtr tmp = ptrSupExts;
+			for (int i = 0; i < count; i++) {
+				IntPtr strPtr = Marshal.ReadIntPtr (tmp);
+				yield return Marshal.PtrToStringAnsi (strPtr);
+				tmp += IntPtr.Size;
+			}
+			Marshal.FreeHGlobal(ptrSupExts);
+		}
+		public static IntPtr GetDeviceRequirements (IntPtr pEnabledFeatures) {
+			return NativeMethods.vkvg_get_device_requirements(pEnabledFeatures);
+		}
+
+		
 		#region IDisposable implementation
 		public void Dispose ()
 		{
