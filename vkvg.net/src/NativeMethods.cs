@@ -254,6 +254,8 @@ namespace vkvg
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern IntPtr vkvg_surface_get_vk_image(IntPtr surf);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern IntPtr vkvg_surface_resize(IntPtr surf, uint width, uint height);
+		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern int vkvg_surface_get_width(IntPtr surf);
 		[DllImport(libvkvg, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern int vkvg_surface_get_height(IntPtr surf);

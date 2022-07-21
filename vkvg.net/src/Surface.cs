@@ -59,8 +59,7 @@ namespace vkvg
 
 		public void Resize(int width, int height)
 		{
-			NativeMethods.vkvg_surface_destroy (handle);
-			handle = NativeMethods.vkvg_surface_create (vkvgDev.Handle, (uint)width, (uint)height);
+			NativeMethods.vkvg_surface_resize (handle, (uint)width, (uint)height);
 		}
 
 		public void Flush () {
